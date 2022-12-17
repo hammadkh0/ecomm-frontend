@@ -1,0 +1,165 @@
+import React, { useState } from "react";
+import Style from "./blackbox.module.css";
+import { useNavigate } from "react-router-dom";
+import {
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  NativeSelect,
+  Select,
+  TextField,
+} from "@mui/material";
+
+export default function Blackbox() {
+  const {
+    heading,
+    subHeading,
+    card,
+    wrapper,
+    mainSubHeading,
+    cardHeader,
+    cardForm,
+
+    formActions,
+  } = Style;
+
+  const history = useNavigate();
+  const [domain, setDomain] = useState("amazon.com");
+  const [url, setUrl] = useState("");
+  const [search, setSearch] = useState("");
+  const [maxPage, setMaxPage] = useState(1);
+  const [asin, setASIN] = useState("");
+
+  function submit(e) {
+    e.preventDefault();
+
+    var data = {
+      domain: domain,
+      url: url,
+      search_term: search,
+      pages: maxPage || 1,
+    };
+
+    // console.log(data);
+    history("/blackbox/products", { state: data });
+  }
+
+  function getProduct(e) {
+    e.preventDefault();
+    var data = {
+      domain: domain,
+      url: url,
+      asin: asin,
+      pages: maxPage || 1,
+    };
+    history("/blackbox/products/" + asin, { state: data });
+  }
+  return (
+    <div className={wrapper}>
+      <div>
+        <p className={heading}>Black Box</p>
+        <p className={subHeading}>
+          Find a product to sell by evaluating products, keywords, competitors and
+          more
+        </p>
+      </div>
+      <div className={card}>
+        <div className={cardHeader}>
+          <p className={mainSubHeading}>Find products on</p>
+          <FormControl sx={{ m: 1, minWidth: 120, marginTop: 0 }} size="small">
+            <InputLabel id="demo-select-small">Domain</InputLabel>
+            {/* <Select
+              labelId="demo-select-small"
+              id="demo-select-small"
+              value={domain}
+              defaultValue="amazon.com"
+              label="Domain"
+              onChange={(e) => {
+                setDomain(e.target.value);
+              }}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={"amazon.com"}>amazon.com</MenuItem>
+              <MenuItem value={"amazon.cd"}>amazon.cd</MenuItem>
+              <MenuItem value={"amazon.au"}>amazon.in</MenuItem>
+            </Select> */}
+            <NativeSelect
+              defaultValue={"amazon.com"}
+              inputProps={{
+                name: "age",
+                id: "uncontrolled-native",
+              }}
+            >
+              <option value={"amazon.com"}>amazon.com</option>
+              <option value={"amazon.de"}>amazon.de</option>
+              <option value={"amazon.fr"}>amazon.fr</option>
+              <option value={"amazon.in"}>amazon.in</option>
+            </NativeSelect>
+          </FormControl>
+
+          <p className={mainSubHeading}>that match your criteria</p>
+        </div>
+        <form className={cardForm} onSubmit={(e) => submit(e)}>
+          <TextField
+            label="URL"
+            id="outlined-size-small"
+            size="small"
+            name="url"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
+          <TextField
+            label="Search Term"
+            id="outlined-size-small"
+            size="small"
+            name="search_term"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <TextField
+            label="Max Pages"
+            id="outlined-size-small"
+            size="small"
+            name="pages"
+            value={maxPage}
+            onChange={(e) => setMaxPage(e.target.value)}
+            inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+          />
+
+          <div className={formActions}>
+            <Button
+              variant="contained"
+              sx={{}}
+              type="submit"
+              disabled={url === "" && search === ""}
+            >
+              Search Products
+            </Button>
+          </div>
+        </form>
+      </div>
+
+      <div className={card}>
+        <h3>Search Using ASIN</h3>
+        <form onSubmit={getProduct}>
+          <TextField
+            label="ASIN"
+            id="outlined-size-small"
+            size="small"
+            name="asin"
+            value={asin}
+            onChange={(e) => setASIN(e.target.value)}
+          />
+          <div className={formActions}>
+            <Button variant="contained" sx={{}} type="submit" disabled={asin === ""}>
+              Search using ASIN
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}

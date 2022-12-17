@@ -1,0 +1,66 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.mainDiv {
+    margin: 2rem;
+    display: flex;
+    width: 80%;
+    gap: 2rem;
+}
+.productImg {
+    height: 300px;
+    width: 300px;
+}
+.title {
+    margin-bottom: 1rem;
+    
+}
+.price {
+    font-size: 24px;
+}
+.categories {
+    font-size: 14px;
+    font-style: italic;
+    color: var(--primary-color-2-light);
+}
+.features h3 {
+    border-bottom: 1px solid;
+    color: var(--primary-color-2);
+}
+.features div {
+    display: flex;
+    margin-bottom: 5px;
+}
+.features div p:first-of-type {
+    font-weight: 600;
+    color: var(--dark-gray);
+    min-width: 300px;
+}
+.featureBullets {
+    margin-left: 1rem;
+    max-width: 90%;
+}
+.description {
+    margin-left: 1rem;
+    max-width: 90%;
+}
+.reviews {
+    margin-left: 1rem;
+    max-width: 90%;
+}
+.reviews h3 {
+    margin: 10px 0;
+}
+.reviewCard {
+    padding: 10px;
+    background-color: beige;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+@media (max-width: 992px) {
+    .mainDiv {
+        flex-direction: column;
+    }
+}
