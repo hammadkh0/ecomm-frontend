@@ -12,21 +12,37 @@ function ProductList() {
 
   const { state } = useLocation();
 
-  const search_term = state.search_term.split(" ").join("+");
+  // const search_term = state.search_term.split(" ").join("+");
+  const search_term = state.search_term;
 
   React.useEffect(() => {
-    axios
-      .get(
-        `https://api.rainforestapi.com/request?api_key=5CE91649F9134F298BC90D84D6F604E0&type=search&amazon_domain=${state.domain}&search_term=${state.search_term}&max_page=${state.pages}&sort_by=price_low_to_high`
-      )
-      .then(({ data }) => {
-        const searchResults = data.search_results;
+    fetch(
+      // `https://api.rainforestapi.com/request?api_key=5CE91649F9134F298BC90D84D6F604E0&type=search&amazon_domain=${state.domain}&search_term=${state.search_term}&max_page=${state.pages}&sort_by=price_low_to_high`
+      "http://localhost:5000/ecomm/products",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+          url: `https://amazon.com`,
+          input_term: search_term,
+        }),
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        // const searchResults = data.search_results;
+        const searchResults = data.products;
+        console.log("🚀 ~ file: ProductList.jsx:38 ~ .then ~ data", data);
         searchResults.map((result) => {
-          return (result["id"] = result["position"]);
+          // return (result["id"] = result["position"]);
+          return (result["id"] = result["asin"]);
         });
         setProducts(searchResults);
       });
-  }, []); // <-- Have to pass in [] here!
+  }, [search_term]); // <-- Have to pass in [] here!
 
   return (
     <>
