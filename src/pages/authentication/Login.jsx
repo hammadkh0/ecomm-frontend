@@ -26,7 +26,7 @@ function Login() {
     event.preventDefault();
     try {
       const responseData = await sendRequest(
-        "http://localhost:3000/ecomm/users/login",
+        `${import.meta.env.VITE_BACKEND_URL}/ecomm/users/login`,
         "POST",
         JSON.stringify({
           email: inputs.email,

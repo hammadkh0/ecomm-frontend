@@ -19,13 +19,13 @@ const ResetPassword = () => {
     e.preventDefault();
     try {
       const res = await fetch(
-        `http://localhost:3000/ecomm/users/resetPassword/${token}`,
+        `${import.meta.env.VITE_BACKEND_URL}/ecomm/users/resetPassword/${token}`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             "Access-Control-Allow-Methods": "*",
-            "Access-Control-Allow-Origin": "http://localhost:3000",
+            "Access-Control-Allow-Origin": import.meta.env.VITE_BACKEND_URL,
           },
           mode: "cors",
           body: JSON.stringify({ password, passwordConfirm }),

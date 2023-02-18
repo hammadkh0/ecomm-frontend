@@ -36,13 +36,16 @@ function Main_profile() {
   useEffect(() => {
     async function getUser() {
       try {
-        const res = await fetch("http://localhost:3000/ecomm/users/me", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${auth.token}`,
-          },
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/ecomm/users/me`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          }
+        );
 
         const userData = await res.json();
         const user = userData.data.user;
@@ -75,17 +78,20 @@ function Main_profile() {
       // formData.append("email", email);
       // formData.append("image", image);
 
-      const res = await fetch("http://localhost:3000/ecomm/users/updateMe", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Methods": "*",
-          "Access-Control-Allow-Origin": "http://localhost:3000",
-          Authorization: `Bearer ${auth.token}`,
-        },
-        mode: "cors",
-        body: JSON.stringify({ name, email }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/ecomm/users/updateMe`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Methods": "*",
+            "Access-Control-Allow-Origin": import.meta.env.VITE_BACKEND_URL,
+            Authorization: `Bearer ${auth.token}`,
+          },
+          mode: "cors",
+          body: JSON.stringify({ name, email }),
+        }
+      );
 
       const data = await res.json();
       if (data.status === "success") {
@@ -123,17 +129,20 @@ function Main_profile() {
         pauseOnHover: false,
       });
     }
-    const res = await fetch("http://localhost:3000/ecomm/users/updatePassword", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Methods": "*",
-        "Access-Control-Allow-Origin": "http://localhost:3000",
-        Authorization: `Bearer ${auth.token}`,
-      },
-      mode: "cors",
-      body: JSON.stringify({ currentPassword, password, passwordConfirm }),
-    });
+    const res = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/ecomm/users/updatePassword`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Methods": "*",
+          "Access-Control-Allow-Origin": import.meta.env.VITE_BACKEND_URL,
+          Authorization: `Bearer ${auth.token}`,
+        },
+        mode: "cors",
+        body: JSON.stringify({ currentPassword, password, passwordConfirm }),
+      }
+    );
     const data = await res.json();
     if (data.status === "success") {
       setCurrentPassword("");
@@ -181,7 +190,7 @@ function Main_profile() {
             <div className={userImageHolder}>
               <Avatar
                 sx={{ height: 100, width: 100 }}
-                src={`http://localhost:3000/${image}`}
+                src={`${import.meta.env.VITE_BACKEND_URL}/${image}`}
               />
             </div>
 

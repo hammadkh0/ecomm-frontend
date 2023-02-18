@@ -33,20 +33,23 @@ export default function Signup() {
     //console.log(data.credential);
     const profile = jwtDecode(data.credential);
 
-    const response = await fetch("http://localhost:3000/ecomm/users/auth/google", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Methods": "*",
-        "Access-Control-Allow-Origin": "http://localhost:3000",
-      },
-      mode: "cors",
-      body: JSON.stringify({
-        user: {
-          credential: profile,
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/ecomm/users/auth/google`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Methods": "*",
+          "Access-Control-Allow-Origin": import.meta.env.VITE_BACKEND_URL,
         },
-      }),
-    });
+        mode: "cors",
+        body: JSON.stringify({
+          user: {
+            credential: profile,
+          },
+        }),
+      }
+    );
 
     const res = await response.json();
     const user = res.data.user;
@@ -59,7 +62,7 @@ export default function Signup() {
     try {
       console.log(inputs);
       const responseData = await sendRequest(
-        "http://localhost:3000/ecomm/users/signup",
+        `${import.meta.env.VITE_BACKEND_URL}/ecomm/users/signup`,
         "POST",
         JSON.stringify({
           name: inputs.name,
