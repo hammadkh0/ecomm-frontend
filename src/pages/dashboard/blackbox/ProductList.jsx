@@ -1,21 +1,18 @@
 import React, { useState } from "react";
 import ProductStyle from "./productstyle.module.css";
-import Navbar from "../../../Component/navbar/Navbar";
 import Rating from "@mui/material/Rating";
 import { useLocation } from "react-router-dom";
 
-import axios from "axios";
-import StickyHeadTable from "../../../Component/MUI/MuiTable";
+import StickyHeadTable from "../../../Component/Tables/AmazonTable";
 
 function ProductList() {
   const [products, setProducts] = useState("");
 
   const { state } = useLocation();
 
-  // const search_term = state.search_term.split(" ").join("+");
   const search_term = state.search_term;
-  //const domain = state.domain;
   // const max_page = state.pages;
+
   React.useEffect(() => {
     fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/products`, {
       method: "POST",
@@ -24,7 +21,7 @@ function ProductList() {
         "Access-Control-Allow-Origin": "*",
       },
       body: JSON.stringify({
-        url: `https://amazon.com`,
+        url: `https://${state.domain}`,
         input_term: search_term,
       }),
     })
@@ -33,13 +30,14 @@ function ProductList() {
         // const searchResults = data.search_results;
         const searchResults = data.products;
         console.log("🚀 ~ file: ProductList.jsx:38 ~ .then ~ data", data);
-        searchResults.map((result) => {
+        searchResults.forEach((result) => {
           // return (result["id"] = result["position"]);
-          return (result["id"] = result["asin"]);
+          result["id"] = result["asin"];
+          result["categories"] = result["categories"].toString();
         });
         setProducts(searchResults);
       });
-  }, [search_term]); // <-- Have to pass in [] here!
+  }, []); // <-- Have to pass in [] here!
 
   return (
     <>
