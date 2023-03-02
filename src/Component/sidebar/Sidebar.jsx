@@ -1,9 +1,11 @@
 import React, { useContext, useState } from "react";
 import Dashboard from "@mui/icons-material/Dashboard";
 import Inventory from "@mui/icons-material/Inventory";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ProfileIcon from "@mui/icons-material/ContactPage";
 import LogoutIcon from "@mui/icons-material/MeetingRoom";
 import HamburgerIcon from "@mui/icons-material/Menu";
+
 import style from "./sidebar.module.scss";
 import ecomLogo from "../../Images/Logo.png";
 import { useNavigate, Link, NavLink } from "react-router-dom";
@@ -40,12 +42,18 @@ function Sidebar() {
     },
     {
       id: 3,
+      name: "Product Suppliers",
+      route: "/suppliers",
+      icon: <LocalShippingIcon />,
+    },
+    {
+      id: 4,
       name: "Profile",
       route: "/profile",
       icon: <ProfileIcon />,
     },
     {
-      id: 4,
+      id: 5,
       name: "Logout",
       route: "/logout",
       icon: <LogoutIcon />,
@@ -65,7 +73,7 @@ function Sidebar() {
 
   function MenuItemDesign(element) {
     element.isActive = element.route === window.location.pathname;
-    if (element.id === 4) {
+    if (element.id === 5) {
       return (
         <div
           className={element.isActive ? `${menuItem} ${activeMenu}` : menuItem}
