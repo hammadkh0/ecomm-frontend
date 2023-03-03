@@ -11,8 +11,10 @@ const columns = [
     headerName: "Image",
     width: 100,
     renderCell: (params) => {
-      const link = params.row.product.image;
-      return <img style={{ width: 40, height: 40 }} src={link} alt="Product" />;
+      const link = params.row.image;
+      return (
+        <img style={{ width: 40, height: 40 }} src={link} alt={params.row.asin} />
+      );
     },
   },
   { field: "title", id: "title", headerName: "Title", width: 250 },
@@ -54,6 +56,7 @@ export default function StickyHeadTable(props) {
         rowsPerPageOptions={[20]}
         checkboxSelection
         disableSelectionOnClick
+        onRowClick={handleRowClick}
         experimentalFeatures={{ newEditingApi: true }}
       />
     </Paper>

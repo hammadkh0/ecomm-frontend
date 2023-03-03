@@ -3,6 +3,7 @@ import Paper from "@mui/material/Paper";
 import { DataGrid } from "@mui/x-data-grid";
 import { Avatar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import styles from "./table.module.css";
 
 const columns = [
   {
@@ -52,20 +53,7 @@ const columns = [
     width: 170,
     renderCell: (params) => {
       const product_link = params.row.product.link;
-      return (
-        <button
-          style={{
-            padding: 5,
-            backgroundColor: "white",
-            border: "2px solid #343a40",
-            color: "#343a40",
-            cursor: "pointer",
-            width: 120,
-          }}
-        >
-          View Product Details
-        </button>
-      );
+      return <button className={styles.productBtn}>View Product Details</button>;
     },
   },
   {
@@ -127,19 +115,7 @@ const columns = [
     width: 170,
     renderCell: (params) => {
       const supplier_link = params.row.supplier.link;
-      return (
-        <button
-          style={{
-            padding: 10,
-            backgroundColor: "white",
-            border: "2px solid #1C8090",
-            color: "#1C8090",
-            cursor: "pointer",
-          }}
-        >
-          View Supplier Details
-        </button>
-      );
+      return <button className={styles.supplierBtn}>View Supplier Details</button>;
     },
   },
 ];
