@@ -3,6 +3,7 @@ import Style from "./suppliers.module.css";
 import { useNavigate } from "react-router-dom";
 import { Button, TextField } from "@mui/material";
 import AlibabaTable from "../../../Component/Tables/AlibabaTable";
+import TransitionsModal from "../../../Component/featureSection/utils/Modal/Modal";
 
 function SuppliersList() {
   const { card, mainSubHeading, cardHeader, cardForm, muiTable, wrapper } = Style;
@@ -10,9 +11,16 @@ function SuppliersList() {
   const [search, setSearch] = useState("");
   const [maxPage, setMaxPage] = useState(1);
   const [products, setProducts] = useState([]);
+  const [error, setError] = useState();
+
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   function findSuppliers(e) {
     e.preventDefault();
+    setOpen(true);
+
     var data = {
       input_term: search,
       pages: maxPage || 1,
@@ -31,10 +39,16 @@ function SuppliersList() {
       .then((data) => {
         console.log("🚀 ~ file: Supplier.jsx:52 ~ .then ~ data", data);
         setProducts(data.results);
+        setOpen(false);
+      })
+      .catch((err) => {
+        setError(err);
+        setOpen(false);
       });
 
     setSearch("");
   }
+
   return (
     <div className={wrapper}>
       <div className={card}>
@@ -73,9 +87,16 @@ function SuppliersList() {
           </div>
         </form>
       </div>
+      {error && <p>{error}</p>}
       <div className={muiTable}>
         {products.length !== 0 && <AlibabaTable products={products} />}
       </div>
+
+      <TransitionsModal
+        open={open}
+        handleClose={handleClose}
+        handleOpen={handleOpen}
+      />
     </div>
   );
 }

@@ -4,9 +4,13 @@ import Rating from "@mui/material/Rating";
 import { useLocation } from "react-router-dom";
 
 import StickyHeadTable from "../../../Component/Tables/AmazonTable";
+import TransitionsModal from "../../../Component/featureSection/utils/Modal/Modal";
 
 function ProductList() {
   const [products, setProducts] = useState("");
+  const [open, setOpen] = React.useState(true);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const { state } = useLocation();
 
@@ -28,14 +32,15 @@ function ProductList() {
       .then((res) => res.json())
       .then((data) => {
         // const searchResults = data.search_results;
-        const searchResults = data.products;
+        const searchResults = data.products || [];
         console.log("🚀 ~ file: ProductList.jsx:38 ~ .then ~ data", data);
-        searchResults.forEach((result) => {
+        searchResults?.forEach((result) => {
           // return (result["id"] = result["position"]);
           result["id"] = result["asin"];
           result["categories"] = result["categories"].toString();
         });
         setProducts(searchResults);
+        setOpen(false);
       });
   }, []); // <-- Have to pass in [] here!
 
@@ -43,17 +48,22 @@ function ProductList() {
     <>
       <div className={ProductStyle.wrapper}>
         <div className={ProductStyle.filterHeader}>
-          <h1>Filters selection</h1>
+          <h1>Product List</h1>
           <p>
             Given below the filters can be applied to find out product which suits
             best as per criteria
           </p>
         </div>
 
-        {products.length && (
+        {products.length !== 0 && (
           <StickyHeadTable products={products} domain={state.domain} />
         )}
       </div>
+      <TransitionsModal
+        open={open}
+        handleClose={handleClose}
+        handleOpen={handleOpen}
+      />
     </>
   );
 }
