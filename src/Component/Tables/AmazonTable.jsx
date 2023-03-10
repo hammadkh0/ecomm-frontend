@@ -44,7 +44,12 @@ export default function StickyHeadTable(props) {
   const handleRowClick = (params) => {
     console.log(params);
     history(`/blackbox/products/${params.row.asin}}`, {
-      state: { asin: params.row.asin, domain: props.domain, link: params.row.link },
+      state: {
+        asin: params.row.asin,
+        domain: props.domain,
+        link: params.row.link,
+        categories: params.row.categories,
+      },
     });
   };
   return (

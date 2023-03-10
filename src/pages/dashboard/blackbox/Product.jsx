@@ -1,24 +1,37 @@
-import { Backdrop, Button, CircularProgress, Rating } from "@mui/material";
+import { Button, Rating } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import TransitionsModal from "../../../Component/featureSection/utils/Modal/Modal";
 import Style from "./product.module.css";
 
 const Product = () => {
   const { state } = useLocation();
-  const [isLoading, setIsLoading] = useState(true);
   const [product, setProduct] = useState("");
   const [reviews, setReviews] = useState([]);
   const [negativeReviews, setNegativeReviews] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [open, setOpen] = React.useState(true);
+  const [error, setError] = React.useState();
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   useEffect(() => {
     axios
-      .get(
-        `https://api.rainforestapi.com/request?api_key=5CE91649F9134F298BC90D84D6F604E0&type=product&amazon_domain=${state.domain}&asin=${state.asin}`
-      )
+      .post(`${import.meta.env.VITE_FLASK_URL}/ecomm/products/${state.asin}`, {
+        link: state.link,
+      })
       .then(({ data }) => {
         const productData = data.product;
+        console.log(data.product);
         setProduct(productData);
         setIsLoading(false);
+        setOpen(false);
+      })
+      .catch((err) => {
+        setError(err.ERROR);
+        setIsLoading(false);
+        setOpen(false);
       });
   }, []);
 
@@ -73,123 +86,139 @@ const Product = () => {
 
   if (isLoading) {
     return (
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={isLoading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <TransitionsModal
+        open={open}
+        handleClose={handleClose}
+        handleOpen={handleOpen}
+      />
     );
   }
-
+  if (error) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <h1>{error}</h1>
+      </div>
+    );
+  }
   return (
-    <div className={Style.wrapper}>
-      <div className={Style.mainDiv}>
-        <img
-          className={Style.productImg}
-          src={product.main_image.link}
-          alt="productImg"
-        />
-        <div className={Style.headerContent}>
-          <h1 className={Style.title}>{product.title}</h1>
+    <>
+      <div className={Style.wrapper}>
+        <div className={Style.mainDiv}>
+          <img
+            className={Style.productImg}
+            src={product.images[0]}
+            alt="productImg"
+          />
+          <div className={Style.headerContent}>
+            <h1 className={Style.title}>{product.title}</h1>
 
-          <p className={Style.categories}>{product.categories_flat}</p>
-          <p className={Style.price}>
-            Price:{" "}
-            {product.buybox_winner.price ? product.buybox_winner.price.raw : ""}
-          </p>
+            <p className={Style.categories}>{state.categories_flat}</p>
+            <p className={Style.price}>
+              Price:
+              {product.price}
+            </p>
 
-          <div className={Style.features}>
-            <h3>Features</h3>
-            {product.attributes &&
-              product.attributes.map((attr, idx) => (
-                <div key={idx}>
-                  <p className={Style.featureName}>{attr.name}</p>
-                  <p className={Style.feature}>{attr.value}</p>
-                </div>
-              ))}
+            <div className={Style.features}>
+              <h3>Features</h3>
+              {product.attributes &&
+                product.attributes.map((attr, idx) => (
+                  <div key={idx}>
+                    <p className={Style.featureName}>{attr.name}</p>
+                    <p className={Style.feature}>{attr.value}</p>
+                  </div>
+                ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className={Style.featureBullets}>
-        <h3>Keywords list</h3>
-        <ul>
-          {product.keywords_list &&
-            product.keywords_list.map((word, idx) => <li key={idx}>{word}</li>)}
-        </ul>
-      </div>
+        <div className={Style.featureBullets}>
+          <h3>Keywords list</h3>
+          <ul>
+            {product.keywords_list &&
+              product.keywords_list.map((word, idx) => <li key={idx}>{word}</li>)}
+          </ul>
+        </div>
 
-      <div className={Style.featureBullets}>
-        <h3>About this item:</h3>
-        <ul>
-          {product.feature_bullets &&
-            product.feature_bullets.map((bullet, idx) => (
-              <li key={idx}>
-                <p>{bullet}</p>
-              </li>
+        <div className={Style.featureBullets}>
+          <h3>About this item:</h3>
+          <ul>
+            {product.feature_bullets &&
+              product.featured_bullets.map((bullet, idx) => (
+                <li key={idx}>
+                  <p>{bullet}</p>
+                </li>
+              ))}
+          </ul>
+        </div>
+
+        <div className={Style.description}>
+          <h3>Prodcut Description</h3>
+          <p id="desc">{product.description}</p>
+        </div>
+
+        <div style={{ display: "flex", marginBottom: "1rem" }}>
+          <Button
+            variant="outlined"
+            sx={{ marginLeft: "10px", marginTop: "1rem", color: "#1C8090" }}
+            onClick={getReviews}
+          >
+            Find Reviews
+          </Button>
+          <Button
+            disabled={!reviews.length}
+            variant="outlined"
+            color="error"
+            sx={{ marginLeft: "10px", marginTop: "1rem" }}
+            onClick={findNegativeReviews}
+          >
+            Find Negative Reviews
+          </Button>
+        </div>
+
+        {negativeReviews.length ? (
+          <div className={Style.reviews}>
+            <h3>Negative Reviews ({negativeReviews.length})</h3>
+            {negativeReviews.map((review, idx) => (
+              <div className={Style.reviewCard} key={idx}>
+                Rating:
+                <Rating
+                  name="read-only"
+                  value={review.rating}
+                  precision={0.5}
+                  readOnly
+                />
+                <p>{review.body}</p>
+              </div>
             ))}
-        </ul>
+          </div>
+        ) : reviews.length ? (
+          <div className={Style.reviews}>
+            <h3>Reviews ({reviews.length})</h3>
+            {reviews.map((review, idx) => (
+              <div className={Style.reviewCard} key={idx}>
+                Rating:
+                <Rating
+                  name="read-only"
+                  value={review.rating}
+                  precision={0.5}
+                  readOnly
+                />
+                <p>{review.body}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
-
-      <div className={Style.description}>
-        <h3>Prodcut Description</h3>
-        <p id="desc">{product.description}</p>
-      </div>
-
-      <div style={{ display: "flex", marginBottom: "1rem" }}>
-        <Button
-          variant="outlined"
-          sx={{ marginLeft: "10px", marginTop: "1rem", color: "#1C8090" }}
-          onClick={getReviews}
-        >
-          Find Reviews
-        </Button>
-        <Button
-          variant="outlined"
-          sx={{ marginLeft: "10px", marginTop: "1rem" }}
-          onClick={findNegativeReviews}
-        >
-          Find Negative Reviews
-        </Button>
-      </div>
-
-      {negativeReviews.length ? (
-        <div className={Style.reviews}>
-          <h3>Negative Reviews ({negativeReviews.length})</h3>
-          {negativeReviews.map((review, idx) => (
-            <div className={Style.reviewCard} key={idx}>
-              Rating:
-              <Rating
-                name="read-only"
-                value={review.rating}
-                precision={0.5}
-                readOnly
-              />
-              <p>{review.body}</p>
-            </div>
-          ))}
-        </div>
-      ) : reviews.length ? (
-        <div className={Style.reviews}>
-          <h3>Reviews ({reviews.length})</h3>
-          {reviews.map((review, idx) => (
-            <div className={Style.reviewCard} key={idx}>
-              Rating:
-              <Rating
-                name="read-only"
-                value={review.rating}
-                precision={0.5}
-                readOnly
-              />
-              <p>{review.body}</p>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <></>
-      )}
-    </div>
+    </>
   );
 };
 
