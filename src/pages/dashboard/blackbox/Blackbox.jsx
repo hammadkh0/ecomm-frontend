@@ -42,6 +42,7 @@ export default function Blackbox() {
     };
 
     // console.log(data);
+    localStorage.removeItem("products");
     history("/blackbox/products", { state: data });
   }
 

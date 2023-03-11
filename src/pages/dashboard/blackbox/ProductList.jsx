@@ -13,35 +13,45 @@ function ProductList() {
   const handleClose = () => setOpen(false);
 
   const { state } = useLocation();
+  console.log(state);
 
   const search_term = state.search_term;
   // const max_page = state.pages;
 
   React.useEffect(() => {
-    fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/products`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        url: `https://${state.domain}`,
-        input_term: search_term,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        // const searchResults = data.search_results;
-        const searchResults = data.products || [];
-        console.log("🚀 ~ file: ProductList.jsx:38 ~ .then ~ data", data);
-        searchResults?.forEach((result) => {
-          // return (result["id"] = result["position"]);
-          result["id"] = result["asin"];
-          result["categories"] = result["categories"].toString();
+    // get from localstorage if user clicked backed to this page
+    const products = localStorage.getItem("products");
+    if (products) {
+      setProducts(JSON.parse(products));
+      setOpen(false);
+    } else {
+      // fetch from server
+      fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/products`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+          url: `https://${state.domain}`,
+          input_term: search_term,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          // const searchResults = data.search_results;
+          const searchResults = data.products || [];
+          console.log("🚀 ~ file: ProductList.jsx:38 ~ .then ~ data", data);
+          searchResults?.forEach((result) => {
+            // return (result["id"] = result["position"]);
+            result["id"] = result["asin"];
+            result["categories"] = result["categories"].toString();
+          });
+          setProducts(searchResults);
+          setOpen(false);
+          localStorage.setItem("products", JSON.stringify(searchResults));
         });
-        setProducts(searchResults);
-        setOpen(false);
-      });
+    }
   }, []); // <-- Have to pass in [] here!
 
   return (

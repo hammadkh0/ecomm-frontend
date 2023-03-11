@@ -43,6 +43,8 @@ export default function StickyHeadTable(props) {
 
   const handleRowClick = (params) => {
     console.log(params);
+    localStorage.removeItem("productDetails");
+    localStorage.removeItem("reviews");
     history(`/blackbox/products/${params.row.asin}}`, {
       state: {
         asin: params.row.asin,
@@ -58,7 +60,7 @@ export default function StickyHeadTable(props) {
         rows={rows}
         columns={columns}
         pageSize={10}
-        rowsPerPageOptions={[20]}
+        rowsPerPageOptions={[10]}
         checkboxSelection
         disableSelectionOnClick
         onRowClick={handleRowClick}

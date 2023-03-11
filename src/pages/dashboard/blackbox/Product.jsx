@@ -1,5 +1,4 @@
 import { Button, Rating } from "@mui/material";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import TransitionsModal from "../../../Component/featureSection/utils/Modal/Modal";
@@ -17,33 +16,73 @@ const Product = () => {
   const handleClose = () => setOpen(false);
 
   useEffect(() => {
-    axios
-      .post(`${import.meta.env.VITE_FLASK_URL}/ecomm/products/${state.asin}`, {
-        link: state.link,
+    const productDetails = localStorage.getItem("productDetails");
+    if (productDetails) {
+      setProduct(JSON.parse(productDetails));
+      setIsLoading(false);
+      setOpen(false);
+    } else {
+      fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/products/${state.asin}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+          link: state.link,
+        }),
       })
-      .then(({ data }) => {
-        const productData = data.product;
-        console.log(data.product);
-        setProduct(productData);
-        setIsLoading(false);
-        setOpen(false);
-      })
-      .catch((err) => {
-        setError(err.ERROR);
-        setIsLoading(false);
-        setOpen(false);
-      });
+        .then((res) => res.json())
+        .then((data) => {
+          const productData = data.product;
+          console.log(data);
+          setProduct(productData);
+          setIsLoading(false);
+          setOpen(false);
+          localStorage.setItem("productDetails", JSON.stringify(productData));
+        })
+        .catch((err) => {
+          setError(err.ERROR);
+          setIsLoading(false);
+          setOpen(false);
+        });
+    }
   }, []);
 
   const getReviews = async () => {
-    const res = await axios.get(
-      `https://api.rainforestapi.com/request?api_key=5CE91649F9134F298BC90D84D6F604E0&type=reviews&amazon_domain=${state.domain}&asin=${state.asin}&max_page=2&review_stars=all_stars&sort_by=most_recent`
-    );
+    // setIsLoading(true);
+    setOpen(true);
 
-    const reviewsData = res.data.reviews;
-    setReviews(reviewsData);
-    console.log(reviewsData);
-    setNegativeReviews([]);
+    const rews = localStorage.getItem("reviews");
+    if (rews) {
+      setReviews(JSON.parse(rews));
+      setIsLoading(false);
+      setOpen(false);
+    } else {
+      fetch(
+        `${import.meta.env.VITE_FLASK_URL}/ecomm/products/${state.asin}/reviews`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+          body: JSON.stringify({
+            reviews_link: product.reviews_link,
+          }),
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          const reviewsData = data.reviews;
+          setReviews(reviewsData);
+          console.log(reviewsData);
+          setNegativeReviews([]);
+          setIsLoading(false);
+          setOpen(false);
+          localStorage.setItem("reviews", JSON.stringify(reviewsData));
+        });
+    }
   };
 
   const findNegativeReviews = async () => {
@@ -54,12 +93,12 @@ const Product = () => {
     });
 
     try {
-      const res = await fetch("http://localhost:5000/sentiment", {
+      const res = await fetch(`${import.meta.env.VITE_FLASK_URL}/sentiment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json; charset=UTF-8",
           "Access-Control-Allow-Methods": "*",
-          "Access-Control-Allow-Origin": "http://localhost:5000",
+          "Access-Control-Allow-Origin": `${import.meta.env.VITE_FLASK_URL}`,
         },
         body: JSON.stringify({
           reviews: filteredReviews,
@@ -113,16 +152,18 @@ const Product = () => {
         <div className={Style.mainDiv}>
           <img
             className={Style.productImg}
-            src={product.images[0]}
+            src={product?.images[0]}
             alt="productImg"
           />
           <div className={Style.headerContent}>
             <h1 className={Style.title}>{product.title}</h1>
 
-            <p className={Style.categories}>{state.categories_flat}</p>
+            <span style={{ marginBottom: 5 }}>
+              Categories: <p className={Style.categories}>{state.categories}</p>
+            </span>
             <p className={Style.price}>
               Price:
-              {product.price}
+              <span style={{ color: "red" }}> {product.price}</span>
             </p>
 
             <div className={Style.features}>
@@ -149,7 +190,7 @@ const Product = () => {
         <div className={Style.featureBullets}>
           <h3>About this item:</h3>
           <ul>
-            {product.feature_bullets &&
+            {product.featured_bullets &&
               product.featured_bullets.map((bullet, idx) => (
                 <li key={idx}>
                   <p>{bullet}</p>
@@ -187,7 +228,6 @@ const Product = () => {
             <h3>Negative Reviews ({negativeReviews.length})</h3>
             {negativeReviews.map((review, idx) => (
               <div className={Style.reviewCard} key={idx}>
-                Rating:
                 <Rating
                   name="read-only"
                   value={review.rating}
@@ -203,14 +243,14 @@ const Product = () => {
             <h3>Reviews ({reviews.length})</h3>
             {reviews.map((review, idx) => (
               <div className={Style.reviewCard} key={idx}>
-                Rating:
                 <Rating
                   name="read-only"
                   value={review.rating}
                   precision={0.5}
                   readOnly
                 />
-                <p>{review.body}</p>
+                <span className={Style.author}>{review.author}</span>
+                <p className={Style.reviewBody}>{review.body}</p>
               </div>
             ))}
           </div>
