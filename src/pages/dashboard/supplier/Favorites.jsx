@@ -1,18 +1,26 @@
-import * as React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Paper from "@mui/material/Paper";
 import { DataGrid } from "@mui/x-data-grid";
-import { useNavigate } from "react-router-dom";
-import styles from "./table.module.css";
-import { AuthContext } from "../../context/auth-context";
-import { toastError, toastSuccess } from "../../utils/toast-message";
-import { toast, ToastContainer } from "react-toastify";
-import { refactorData } from "../../pages/dashboard/supplier/SuppliersList";
+import { useLocation, useNavigate } from "react-router-dom";
+import styles from "../../../Component/Tables/table.module.css";
+import { AuthContext } from "../../../context/auth-context";
+import { refactorData } from "./SuppliersList";
+import { ToastContainer } from "react-toastify";
+import TransitionsModal from "../../../Component/featureSection/utils/Modal/Modal";
+import Style from "./suppliers.module.css";
+import { toastError, toastSuccess } from "../../../utils/toast-message";
 
-export default function AlibabaTable(props) {
-  const history = useNavigate();
-  const auth = React.useContext(AuthContext);
-  const [text, setText] = React.useState({ id: "", text: "" });
-  const [rows, setRows] = React.useState(props.products);
+function Favorites() {
+  const { card, mainSubHeading, cardHeader, cardForm, muiTable, wrapper } = Style;
+  const { state } = useLocation();
+  console.log("🚀 ~ file: Favorites.jsx:16 ~ Favorites ~ state:", state);
+  const auth = useContext(AuthContext);
+
+  const [error, setError] = useState();
+  const [rows, setRows] = useState(state);
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const columns = [
     {
@@ -135,16 +143,12 @@ export default function AlibabaTable(props) {
       renderCell: (params) => {
         return (
           <button
-            className={text.id === params.row.id ? styles.favBtn2 : styles.favBtn}
+            className={styles.favBtn2}
             onClick={(e) => {
-              text.text === "" || "Add to Favorites"
-                ? handleFavorites(e, params.row)
-                : removeFavorites(e, params.row);
+              removeFavorites(e, params.row);
             }}
           >
-            {text.id === params.row.id
-              ? "Remove from Favorites"
-              : "Add to Favorites"}
+            Remove from Favorites
           </button>
         );
       },
@@ -152,32 +156,6 @@ export default function AlibabaTable(props) {
   ];
 
   function handleSupplierDetails() {}
-
-  function handleFavorites(e, prod) {
-    e.preventDefault();
-    const supplier = { ...prod.product, ...prod.supplier };
-
-    console.log(supplier);
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/ecomm/suppliers/addSupplier`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${auth.token}`,
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        ...supplier,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data.user);
-        setText({ id: prod.id, text: "Added to favorites" });
-      })
-      .catch((err) => {
-        toastError(err.message);
-      });
-  }
 
   function removeFavorites(e, prod) {
     e.preventDefault();
@@ -194,21 +172,46 @@ export default function AlibabaTable(props) {
       .then((data) => {
         const newData = refactorData(data.data.suppliers);
         setRows(newData);
+        toastSuccess("Removed from favorites");
+      })
+      .catch((err) => {
+        toastError("Error removing from favorites");
       });
   }
 
   return (
-    <Paper sx={{ width: "100%", height: 500 }}>
-      <ToastContainer />
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        pageSize={10}
-        rowsPerPageOptions={[10]}
-        checkboxSelection
-        disableSelectionOnClick
-        experimentalFeatures={{ newEditingApi: true }}
+    <div className={wrapper}>
+      <div className={card}>
+        <div className={cardHeader}>
+          <h2 className={mainSubHeading}>Favorite Suppliers across Alibaba</h2>
+          <p>Select a supplier to see furthur details</p>
+        </div>
+      </div>
+      {error && <p>{error}</p>}
+      <div className={muiTable}>
+        {rows.length !== 0 && (
+          <Paper sx={{ width: "100%", height: 500 }}>
+            <ToastContainer />
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              pageSize={10}
+              rowsPerPageOptions={[10]}
+              checkboxSelection
+              disableSelectionOnClick
+              experimentalFeatures={{ newEditingApi: true }}
+            />
+          </Paper>
+        )}
+      </div>
+
+      <TransitionsModal
+        open={open}
+        handleClose={handleClose}
+        handleOpen={handleOpen}
       />
-    </Paper>
+    </div>
   );
 }
+
+export default Favorites;

@@ -1,13 +1,40 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Style from "./suppliers.module.css";
 import { useNavigate } from "react-router-dom";
 import { Button, TextField } from "@mui/material";
 import AlibabaTable from "../../../Component/Tables/AlibabaTable";
 import TransitionsModal from "../../../Component/featureSection/utils/Modal/Modal";
+import { AuthContext } from "../../../context/auth-context";
+
+export function refactorData(supplierData) {
+  const d = supplierData.map((supplier, idx) => ({
+    id: idx,
+    _id: supplier._id,
+    product: {
+      details: {},
+      image: supplier.image,
+      min_order: supplier.min_order,
+      p_link: supplier.p_link,
+      price_range: supplier.price_range,
+      title: supplier.title,
+    },
+    supplier: {
+      country: supplier.country,
+      experience: supplier.experience,
+      isVerified: supplier.isVerified,
+      level: supplier.level,
+      link: supplier.link,
+      name: supplier.name,
+      rating: supplier.rating,
+    },
+  }));
+  return d;
+}
 
 function SuppliersList() {
   const { card, mainSubHeading, cardHeader, cardForm, muiTable, wrapper } = Style;
-
+  const auth = useContext(AuthContext);
+  const history = useNavigate();
   const [search, setSearch] = useState("");
   const [maxPage, setMaxPage] = useState(1);
   const [products, setProducts] = useState([]);
@@ -49,6 +76,34 @@ function SuppliersList() {
     setSearch("");
   }
 
+  function getFavorites(e) {
+    e.preventDefault();
+    setOpen(true);
+    setProducts([]);
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/ecomm/suppliers/getSuppliers`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Methods": "*",
+        "Access-Control-Allow-Origin": import.meta.env.VITE_BACKEND_URL,
+        Authorization: `Bearer ${auth.token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const newData = refactorData(data.data.suppliers);
+        console.log("🚀 ~ file: Supplier.jsx:52 ~ .then ~ data", newData);
+
+        // setProducts(newData);
+        setOpen(false);
+        history("/suppliers/favorites", { state: newData });
+      })
+      .catch((err) => {
+        setError(err.message);
+        setOpen(false);
+      });
+  }
+
   return (
     <div className={wrapper}>
       <div className={card}>
@@ -83,6 +138,16 @@ function SuppliersList() {
               onClick={findSuppliers}
             >
               Search Products
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              sx={{ marginLeft: 5 }}
+              onClick={(e) => {
+                getFavorites(e);
+              }}
+            >
+              View Favorites
             </Button>
           </div>
         </form>

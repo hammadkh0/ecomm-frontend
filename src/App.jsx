@@ -19,6 +19,7 @@ import { AuthContext } from "./context/auth-context";
 import { useAuth } from "./hooks/auth-hook";
 import Product from "./pages/dashboard/blackbox/Product";
 import SuppliersList from "./pages/dashboard/supplier/SuppliersList";
+import Favorites from "./pages/dashboard/supplier/Favorites";
 
 const App = () => {
   let { token, login, logout, userId, name } = useAuth();
@@ -45,6 +46,7 @@ const App = () => {
           <Route exact path="/blackbox/products" element={<ProductList />} />
           <Route exact path="/blackbox/products/:asin" element={<Product />} />
           <Route exact path="/suppliers" element={<SuppliersList />} />
+          <Route exact path="/suppliers/favorites" element={<Favorites />} />
           <Route exact path="/profile" element={<Profile />} />
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Route>
