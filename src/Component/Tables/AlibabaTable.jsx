@@ -5,14 +5,20 @@ import { useNavigate } from "react-router-dom";
 import styles from "./table.module.css";
 import { AuthContext } from "../../context/auth-context";
 import { toastError, toastSuccess } from "../../utils/toast-message";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { refactorData } from "../../pages/dashboard/supplier/SuppliersList";
+import TransitionsModal from "../featureSection/utils/Modal/Modal";
 
 export default function AlibabaTable(props) {
   const history = useNavigate();
   const auth = React.useContext(AuthContext);
   const [text, setText] = React.useState({ id: "", text: "" });
   const [rows, setRows] = React.useState(props.products);
+
+  const [error, setError] = React.useState();
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const columns = [
     {
@@ -61,8 +67,17 @@ export default function AlibabaTable(props) {
       headerName: "View Product",
       width: 170,
       renderCell: (params) => {
-        const product_link = params.row.product.link;
-        return <button className={styles.productBtn}>View Product Details</button>;
+        const product = params.row.product;
+        return (
+          <button
+            className={styles.productBtn}
+            onClick={(e) => {
+              handleSupplierProductDetails(e, product);
+            }}
+          >
+            View Product Details
+          </button>
+        );
       },
     },
     {
@@ -123,8 +138,19 @@ export default function AlibabaTable(props) {
       headerName: "View Supplier",
       width: 170,
       renderCell: (params) => {
-        const supplier_link = params.row.supplier.link;
-        return <button className={styles.supplierBtn}>View Supplier Details</button>;
+        const supplier = params.row.supplier;
+        const sId = params.row._id;
+        const link = params.row.product.p_link;
+        return (
+          <button
+            className={styles.supplierBtn}
+            onClick={(e) => {
+              handleSupplierDetails(e, supplier, sId, link);
+            }}
+          >
+            View Supplier Details
+          </button>
+        );
       },
     },
     {
@@ -151,7 +177,43 @@ export default function AlibabaTable(props) {
     },
   ];
 
-  function handleSupplierDetails() {}
+  function handleSupplierDetails(e, supplier, sId, link) {
+    e.preventDefault();
+    setOpen(true);
+    fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/suppliers/details`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({ url: link }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setOpen(false);
+        history(`/suppliers/${sId}/details`, { state: { supplier, data } });
+      })
+      .catch((err) => setError(err));
+  }
+
+  function handleSupplierProductDetails(e, product) {
+    e.preventDefault();
+    setOpen(true);
+    fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/suppliers/product/details`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({ product_link: product.p_link }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setOpen(false);
+        history(`/suppliers/product/details`, { state: { product, data } });
+      })
+      .catch((err) => setError(err));
+  }
 
   function handleFavorites(e, prod) {
     e.preventDefault();
@@ -208,6 +270,11 @@ export default function AlibabaTable(props) {
         checkboxSelection
         disableSelectionOnClick
         experimentalFeatures={{ newEditingApi: true }}
+      />
+      <TransitionsModal
+        open={open}
+        handleClose={handleClose}
+        handleOpen={handleOpen}
       />
     </Paper>
   );

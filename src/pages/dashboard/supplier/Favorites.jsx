@@ -16,8 +16,8 @@ function Favorites() {
   const auth = useContext(AuthContext);
   const history = useNavigate();
 
-  const [error, setError] = useState();
   const [rows, setRows] = useState(state);
+  const [error, setError] = useState();
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -142,11 +142,12 @@ function Favorites() {
       renderCell: (params) => {
         const supplier = params.row.supplier;
         const sId = params.row._id;
+        const link = params.row.product.p_link;
         return (
           <button
             className={styles.supplierBtn}
             onClick={(e) => {
-              handleSupplierDetails(e, supplier, sId);
+              handleSupplierDetails(e, supplier, sId, link);
             }}
           >
             View Supplier Details
@@ -155,9 +156,9 @@ function Favorites() {
       },
     },
     {
-      field: "add_favorites",
-      id: "add_favorites",
-      headerName: "Add to Favorites",
+      field: "remove_favorites",
+      id: "remove_favorites",
+      headerName: "Remove from Favorites",
       width: 170,
       renderCell: (params) => {
         return (
@@ -174,14 +175,42 @@ function Favorites() {
     },
   ];
 
-  function handleSupplierDetails(e, supplier, sId) {
+  function handleSupplierDetails(e, supplier, sId, link) {
     e.preventDefault();
-    history(`/suppliers/${sId}/details`, { state: { supplier } });
+
+    fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/suppliers/details`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({ url: link }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setOpen(false);
+        history(`/suppliers/${sId}/details`, { state: { supplier, data } });
+      })
+      .catch((err) => setError(err));
   }
 
   function handleSupplierProductDetails(e, product) {
     e.preventDefault();
-    history("/suppliers/product/details", { state: { product } });
+    setOpen(true);
+    fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/suppliers/product/details`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({ product_link: product.p_link }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setOpen(false);
+        history(`/suppliers/product/details`, { state: { product, data } });
+      })
+      .catch((err) => setError(err));
   }
 
   function removeFavorites(e, prod) {

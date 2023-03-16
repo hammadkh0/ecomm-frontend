@@ -44,6 +44,13 @@ function SuppliersList() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  React.useEffect(() => {
+    const data = localStorage.getItem("alibabaData");
+    if (data) {
+      setProducts(JSON.parse(data));
+    }
+  }, []);
+
   function findSuppliers(e) {
     e.preventDefault();
     setOpen(true);
@@ -66,6 +73,7 @@ function SuppliersList() {
       .then((data) => {
         console.log("🚀 ~ file: Supplier.jsx:52 ~ .then ~ data", data);
         setProducts(data.results);
+        localStorage.setItem("alibabaData", JSON.stringify(data.results));
         setOpen(false);
       })
       .catch((err) => {
@@ -96,6 +104,8 @@ function SuppliersList() {
 
         // setProducts(newData);
         setOpen(false);
+        localStorage.removeItem("supplierProductData");
+        localStorage.removeItem("supplierData");
         history("/suppliers/favorites", { state: newData });
       })
       .catch((err) => {
