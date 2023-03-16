@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import Paper from "@mui/material/Paper";
 import { DataGrid } from "@mui/x-data-grid";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -11,10 +11,10 @@ import Style from "./suppliers.module.css";
 import { toastError, toastSuccess } from "../../../utils/toast-message";
 
 function Favorites() {
-  const { card, mainSubHeading, cardHeader, cardForm, muiTable, wrapper } = Style;
+  const { card, mainSubHeading, cardHeader, muiTable, wrapper } = Style;
   const { state } = useLocation();
-  console.log("🚀 ~ file: Favorites.jsx:16 ~ Favorites ~ state:", state);
   const auth = useContext(AuthContext);
+  const history = useNavigate();
 
   const [error, setError] = useState();
   const [rows, setRows] = useState(state);
@@ -131,8 +131,18 @@ function Favorites() {
       headerName: "View Supplier",
       width: 170,
       renderCell: (params) => {
-        const supplier_link = params.row.supplier.link;
-        return <button className={styles.supplierBtn}>View Supplier Details</button>;
+        const supplier = params.row.supplier;
+        const sId = params.row._id;
+        return (
+          <button
+            className={styles.supplierBtn}
+            onClick={(e) => {
+              handleSupplierDetails(e, supplier, sId);
+            }}
+          >
+            View Supplier Details
+          </button>
+        );
       },
     },
     {
@@ -155,11 +165,13 @@ function Favorites() {
     },
   ];
 
-  function handleSupplierDetails() {}
+  function handleSupplierDetails(e, supplier, sId) {
+    e.preventDefault();
+    history(`/suppliers/${sId}/details`, { state: { supplier } });
+  }
 
   function removeFavorites(e, prod) {
     e.preventDefault();
-    console.log(prod);
     fetch(`${import.meta.env.VITE_BACKEND_URL}/ecomm/suppliers/${prod._id}`, {
       method: "DELETE",
       headers: {

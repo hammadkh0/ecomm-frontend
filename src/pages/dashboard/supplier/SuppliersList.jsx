@@ -92,7 +92,7 @@ function SuppliersList() {
       .then((res) => res.json())
       .then((data) => {
         const newData = refactorData(data.data.suppliers);
-        console.log("🚀 ~ file: Supplier.jsx:52 ~ .then ~ data", newData);
+        console.log("🚀 ~ file: SuppliersList.jsx:95 ~ .then ~ newData:", newData);
 
         // setProducts(newData);
         setOpen(false);
