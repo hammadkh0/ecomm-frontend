@@ -69,8 +69,17 @@ function Favorites() {
       headerName: "View Product",
       width: 170,
       renderCell: (params) => {
-        const product_link = params.row.product.link;
-        return <button className={styles.productBtn}>View Product Details</button>;
+        const product = params.row.product;
+        return (
+          <button
+            className={styles.productBtn}
+            onClick={(e) => {
+              handleSupplierProductDetails(e, product);
+            }}
+          >
+            View Product Details
+          </button>
+        );
       },
     },
     {
@@ -168,6 +177,11 @@ function Favorites() {
   function handleSupplierDetails(e, supplier, sId) {
     e.preventDefault();
     history(`/suppliers/${sId}/details`, { state: { supplier } });
+  }
+
+  function handleSupplierProductDetails(e, product) {
+    e.preventDefault();
+    history("/suppliers/product/details", { state: { product } });
   }
 
   function removeFavorites(e, prod) {
