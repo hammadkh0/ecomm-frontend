@@ -58,6 +58,7 @@ const Product = () => {
       setReviews(JSON.parse(rews));
       setIsLoading(false);
       setOpen(false);
+      setNegativeReviews([]);
     } else {
       fetch(
         `${import.meta.env.VITE_FLASK_URL}/ecomm/products/${state.asin}/reviews`,
@@ -85,15 +86,15 @@ const Product = () => {
     }
   };
 
-  const findNegativeReviews = async () => {
+  const findNegativeReviews = () => {
     // await getReviews();
-
-    const filteredReviews = reviews.map((review) => {
-      return { id: review.id, body: review.body };
-    });
+    setOpen(true);
+    // const filteredReviews = reviews.map((review) => {
+    //   return { id: review.id, body: review.body };
+    // });
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_FLASK_URL}/sentiment`, {
+      fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/sentiment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json; charset=UTF-8",
@@ -101,25 +102,18 @@ const Product = () => {
           "Access-Control-Allow-Origin": `${import.meta.env.VITE_FLASK_URL}`,
         },
         body: JSON.stringify({
-          reviews: filteredReviews,
+          reviews: reviews,
         }),
-        mode: "cors",
-      });
-      const data = await res.json();
-
-      const arr = [];
-      for (let i = 0; i < data.length; i++) {
-        for (let j = 0; j < reviews.length; j++) {
-          if (data[i].id === reviews[j].id) {
-            arr.push(reviews[i]);
-          }
-        }
-      }
-
-      setNegativeReviews(arr);
-      setReviews([]);
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setNegativeReviews(data);
+          setReviews([]);
+          setOpen(false);
+        });
     } catch (err) {
       console.log(err);
+      setError(err);
     }
   };
 
@@ -148,6 +142,11 @@ const Product = () => {
   }
   return (
     <>
+      <TransitionsModal
+        open={open}
+        handleClose={handleClose}
+        handleOpen={handleOpen}
+      />
       <div className={Style.wrapper}>
         <div className={Style.mainDiv}>
           <img
@@ -228,12 +227,22 @@ const Product = () => {
             <h3>Negative Reviews ({negativeReviews.length})</h3>
             {negativeReviews.map((review, idx) => (
               <div className={Style.reviewCard} key={idx}>
-                <Rating
-                  name="read-only"
-                  value={review.rating}
-                  precision={0.5}
-                  readOnly
-                />
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    marginBottom: 5,
+                  }}
+                >
+                  <Rating
+                    name="read-only"
+                    value={review.rating}
+                    precision={0.5}
+                    readOnly
+                  />
+                  <span className={Style.author}>{review.author}</span>
+                </div>
                 <p>{review.body}</p>
               </div>
             ))}
@@ -243,13 +252,22 @@ const Product = () => {
             <h3>Reviews ({reviews.length})</h3>
             {reviews.map((review, idx) => (
               <div className={Style.reviewCard} key={idx}>
-                <Rating
-                  name="read-only"
-                  value={review.rating}
-                  precision={0.5}
-                  readOnly
-                />
-                <span className={Style.author}>{review.author}</span>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    marginBottom: 5,
+                  }}
+                >
+                  <Rating
+                    name="read-only"
+                    value={review.rating}
+                    precision={0.5}
+                    readOnly
+                  />
+                  <span className={Style.author}>{review.author}</span>
+                </div>
                 <p className={Style.reviewBody}>{review.body}</p>
               </div>
             ))}
