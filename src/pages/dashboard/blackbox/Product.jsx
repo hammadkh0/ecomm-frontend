@@ -7,6 +7,7 @@ import Style from "./product.module.css";
 const Product = () => {
   const { state } = useLocation();
   const [product, setProduct] = useState("");
+  const [summary, setSummary] = useState();
   const [reviews, setReviews] = useState([]);
   const [negativeReviews, setNegativeReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -50,7 +51,6 @@ const Product = () => {
   }, []);
 
   const getReviews = async () => {
-    // setIsLoading(true);
     setOpen(true);
 
     const rews = localStorage.getItem("reviews");
@@ -87,13 +87,14 @@ const Product = () => {
   };
 
   const findNegativeReviews = () => {
-    // await getReviews();
     setOpen(true);
-    // const filteredReviews = reviews.map((review) => {
-    //   return { id: review.id, body: review.body };
-    // });
-
-    try {
+    const rews = localStorage.getItem("negReviews");
+    if (rews) {
+      setNegativeReviews(JSON.parse(rews));
+      setIsLoading(false);
+      setOpen(false);
+      setReviews([]);
+    } else {
       fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/sentiment`, {
         method: "POST",
         headers: {
@@ -110,11 +111,37 @@ const Product = () => {
           setNegativeReviews(data);
           setReviews([]);
           setOpen(false);
+          localStorage.setItem("negReviews", JSON.stringify(data));
+        })
+        .catch((err) => {
+          console.log(err);
+          setError(err);
         });
-    } catch (err) {
-      console.log(err);
-      setError(err);
     }
+  };
+
+  const getSummary = () => {
+    setOpen(true);
+    const reviewsText = negativeReviews.map((review) => review.body).join("\n");
+    console.log(reviewsText);
+    fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/summary`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({
+        reviewsText,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        // setReviews([]);
+        // setNegativeReviews([]);
+        setSummary(data);
+        setOpen(false);
+      });
   };
 
   if (isLoading) {
@@ -220,6 +247,15 @@ const Product = () => {
           >
             Find Negative Reviews
           </Button>
+          <Button
+            disabled={!negativeReviews.length}
+            variant="outlined"
+            color="warning"
+            sx={{ marginLeft: "10px", marginTop: "1rem" }}
+            onClick={getSummary}
+          >
+            Get Reviews Summary
+          </Button>
         </div>
 
         {negativeReviews.length ? (
@@ -275,6 +311,20 @@ const Product = () => {
         ) : (
           <></>
         )}
+        <div>
+          {summary && (
+            <div
+              style={{
+                marginLeft: 15,
+                maxWidth: "90%",
+                marginBottom: 16,
+              }}
+            >
+              <h3>Summary of Negative Reviews</h3>
+              <p>{summary}</p>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

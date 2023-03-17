@@ -45,6 +45,7 @@ export default function StickyHeadTable(props) {
     console.log(params);
     localStorage.removeItem("productDetails");
     localStorage.removeItem("reviews");
+    localStorage.removeItem("negReviews");
     history(`/blackbox/products/${params.row.asin}}`, {
       state: {
         asin: params.row.asin,
