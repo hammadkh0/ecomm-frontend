@@ -16,6 +16,60 @@ const Product = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  function getProductDetails() {
+    fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/products/${state.asin}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({
+        link: state.link,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const productData = data.product;
+        console.log(data);
+        setProduct(productData);
+        setIsLoading(false);
+        setOpen(false);
+        localStorage.setItem("productDetails", JSON.stringify(productData));
+      })
+      .catch((err) => {
+        setError(err.ERROR);
+        setIsLoading(false);
+        setOpen(false);
+      });
+  }
+
+  function searchProductAsin() {
+    fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/products/search/${state.asin}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({
+        url: state.url,
+        asin: state.asin,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const productData = data.product;
+        console.log(data);
+        setProduct(productData);
+        setIsLoading(false);
+        setOpen(false);
+        localStorage.setItem("productDetails", JSON.stringify(productData));
+      })
+      .catch((err) => {
+        setError(err.ERROR);
+        setIsLoading(false);
+        setOpen(false);
+      });
+  }
   useEffect(() => {
     const productDetails = localStorage.getItem("productDetails");
     if (productDetails) {
@@ -23,30 +77,11 @@ const Product = () => {
       setIsLoading(false);
       setOpen(false);
     } else {
-      fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/products/${state.asin}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-        body: JSON.stringify({
-          link: state.link,
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          const productData = data.product;
-          console.log(data);
-          setProduct(productData);
-          setIsLoading(false);
-          setOpen(false);
-          localStorage.setItem("productDetails", JSON.stringify(productData));
-        })
-        .catch((err) => {
-          setError(err.ERROR);
-          setIsLoading(false);
-          setOpen(false);
-        });
+      if (state.link) {
+        getProductDetails();
+      } else if (state.url) {
+        searchProductAsin();
+      }
     }
   }, []);
 
@@ -153,20 +188,7 @@ const Product = () => {
       />
     );
   }
-  if (error) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <h1>{error}</h1>
-      </div>
-    );
-  }
+
   return (
     <>
       <TransitionsModal
@@ -174,6 +196,18 @@ const Product = () => {
         handleClose={handleClose}
         handleOpen={handleOpen}
       />
+      {error && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+          }}
+        >
+          <h1>{error}</h1>
+        </div>
+      )}
       <div className={Style.wrapper}>
         <div className={Style.mainDiv}>
           <img
@@ -185,7 +219,8 @@ const Product = () => {
             <h1 className={Style.title}>{product.title}</h1>
 
             <span style={{ marginBottom: 5 }}>
-              Categories: <p className={Style.categories}>{state.categories}</p>
+              Categories:
+              <p className={Style.categories}>{state.categories || ""}</p>
             </span>
             <p className={Style.price}>
               Price:

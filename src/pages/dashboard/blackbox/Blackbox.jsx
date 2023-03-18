@@ -56,6 +56,20 @@ export default function Blackbox() {
     };
     history("/blackbox/products/" + asin, { state: data });
   }
+
+  function searchUsingASIN(e) {
+    e.preventDefault();
+    localStorage.removeItem("productDetails");
+    localStorage.removeItem("reviews");
+    localStorage.removeItem("negReviews");
+    history(`/blackbox/products/${asin}}`, {
+      state: {
+        url: "https://" + domain,
+        asin,
+      },
+    });
+  }
+
   return (
     <div className={wrapper}>
       <div>
@@ -144,7 +158,7 @@ export default function Blackbox() {
       </div>
 
       <div className={card}>
-        <h3>Search Using ASIN</h3>
+        <h3 style={{ marginBottom: 10 }}>Search Using ASIN</h3>
         <form onSubmit={getProduct}>
           <TextField
             label="ASIN"
@@ -155,7 +169,13 @@ export default function Blackbox() {
             onChange={(e) => setASIN(e.target.value)}
           />
           <div className={formActions}>
-            <Button variant="contained" sx={{}} type="submit" disabled={asin === ""}>
+            <Button
+              variant="contained"
+              sx={{}}
+              type="submit"
+              disabled={asin === ""}
+              onClick={searchUsingASIN}
+            >
               Search using ASIN
             </Button>
           </div>
