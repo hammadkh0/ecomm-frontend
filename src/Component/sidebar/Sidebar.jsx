@@ -1,15 +1,17 @@
 import React, { useContext, useState } from "react";
+import { useNavigate, Link, NavLink } from "react-router-dom";
+import { AuthContext } from "../../context/auth-context";
+
 import Dashboard from "@mui/icons-material/Dashboard";
 import Inventory from "@mui/icons-material/Inventory";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ProfileIcon from "@mui/icons-material/ContactPage";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import LogoutIcon from "@mui/icons-material/MeetingRoom";
 import HamburgerIcon from "@mui/icons-material/Menu";
 
 import style from "./sidebar.module.scss";
 import ecomLogo from "../../Images/Logo.png";
-import { useNavigate, Link, NavLink } from "react-router-dom";
-import { AuthContext } from "../../context/auth-context";
 
 function Sidebar() {
   const history = useNavigate();
@@ -48,12 +50,18 @@ function Sidebar() {
     },
     {
       id: 4,
+      name: "Market Trends",
+      route: "/trends",
+      icon: <TrendingUpIcon />,
+    },
+    {
+      id: 5,
       name: "Profile",
       route: "/profile",
       icon: <ProfileIcon />,
     },
     {
-      id: 5,
+      id: 6,
       name: "Logout",
       route: "/logout",
       icon: <LogoutIcon />,
@@ -73,7 +81,7 @@ function Sidebar() {
 
   function MenuItemDesign(element) {
     element.isActive = element.route === window.location.pathname;
-    if (element.id === 5) {
+    if (element.id === 6) {
       return (
         <div
           className={element.isActive ? `${menuItem} ${activeMenu}` : menuItem}

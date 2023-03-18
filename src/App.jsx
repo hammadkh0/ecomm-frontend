@@ -22,6 +22,7 @@ import SuppliersList from "./pages/dashboard/supplier/SuppliersList";
 import Favorites from "./pages/dashboard/supplier/Favorites";
 import SupplierDetails from "./pages/dashboard/supplier/SupplierDetails";
 import SupplierProductDetails from "./pages/dashboard/supplier/SupplierProductDetails";
+import Trends from "./pages/dashboard/trends/Trends";
 
 const App = () => {
   let { token, login, logout, userId, name } = useAuth();
@@ -35,7 +36,7 @@ const App = () => {
         <Route exact path="/signup" element={<Signup />} />
         <Route exact path="/recover-password" element={<ForgetPassword />} />
         <Route exact path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
       </Routes>
     );
   } else {
@@ -59,6 +60,7 @@ const App = () => {
             path="/suppliers/product/details"
             element={<SupplierProductDetails />}
           />
+          <Route exact path="/trends" element={<Trends />} />
           <Route exact path="/profile" element={<Profile />} />
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Route>
