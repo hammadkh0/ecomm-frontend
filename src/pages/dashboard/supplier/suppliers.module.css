@@ -6,7 +6,7 @@ h2 {
 .wrapper {
     display: flex;
     flex-direction: column;
-    flex:0.8;
+    width: 75%;
 }
 
 .card {

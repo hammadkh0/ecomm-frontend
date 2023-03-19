@@ -46,16 +46,16 @@ export default function Blackbox() {
     history("/blackbox/products", { state: data });
   }
 
-  function getProduct(e) {
-    e.preventDefault();
-    var data = {
-      domain: domain,
-      url: url,
-      asin: asin,
-      pages: maxPage || 1,
-    };
-    history("/blackbox/products/" + asin, { state: data });
-  }
+  // function getProduct(e) {
+  //   e.preventDefault();
+  //   var data = {
+  //     domain: domain,
+  //     url: url,
+  //     asin: asin,
+  //     pages: maxPage || 1,
+  //   };
+  //   history("/blackbox/products/" + asin, { state: data });
+  // }
 
   function searchUsingASIN(e) {
     e.preventDefault();
@@ -159,7 +159,7 @@ export default function Blackbox() {
 
       <div className={card}>
         <h3 style={{ marginBottom: 10 }}>Search Using ASIN</h3>
-        <form onSubmit={getProduct}>
+        <form>
           <TextField
             label="ASIN"
             id="outlined-size-small"
