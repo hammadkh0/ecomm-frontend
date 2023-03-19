@@ -10,7 +10,7 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 
-import { Button, TextField } from "@mui/material";
+import { Button, Rating, TextField } from "@mui/material";
 import TransitionsModal from "../../../Component/featureSection/utils/Modal/Modal";
 import Styles from "./trends.module.css";
 
@@ -23,6 +23,9 @@ const Trends = () => {
   const [risingQueries, setRisingQueries] = React.useState();
   const [topics, setTopics] = React.useState();
 
+  const [rankedProducts, setRankedProducts] = React.useState();
+
+  const [error, setError] = React.useState();
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -30,6 +33,7 @@ const Trends = () => {
   function getTrends(e) {
     e.preventDefault();
     setOpen(true);
+    setRankedProducts();
     fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/trends`, {
       method: "POST",
       headers: {
@@ -67,10 +71,31 @@ const Trends = () => {
 
       .catch((err) => {
         console.log(err);
+        setError(err);
         setOpen(false);
       });
   }
 
+  function getProducts(e) {
+    e.preventDefault();
+    setOpen(true);
+    setData();
+    setQueries();
+    setRisingQueries();
+    setTopics();
+
+    fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/products/best-sellers`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setRankedProducts(data);
+        setOpen(false);
+      })
+      .catch((err) => {
+        setError(err);
+        setOpen(false);
+      });
+  }
   return (
     <div
       style={{
@@ -94,7 +119,7 @@ const Trends = () => {
           <div>
             <Button
               variant="outlined"
-              color="warning"
+              color="success"
               sx={{ height: 40 }}
               type="submit"
               disabled={keywords.length === 0}
@@ -103,8 +128,59 @@ const Trends = () => {
               Find Trends
             </Button>
           </div>
+          <div>
+            <Button
+              variant="outlined"
+              color="warning"
+              sx={{ height: 40 }}
+              type="submit"
+              onClick={getProducts}
+            >
+              Find Products
+            </Button>
+          </div>
         </form>
       </div>
+
+      {error && <p>{error}</p>}
+      {rankedProducts &&
+        rankedProducts.map((item, idx) => {
+          return (
+            <div key={"rp" + idx}>
+              <h2 className={Styles.bestHeading}>{item.category}</h2>
+              <div className={Styles.items}>
+                {item.items.map((subItem, idx) => {
+                  return (
+                    <div className={Styles.productCard} key={idx}>
+                      <img
+                        src={subItem.image}
+                        alt={subItem.asin}
+                        className={Styles.productImage}
+                      />
+                      <div>
+                        <p className={Styles.title}>{subItem.title}</p>
+                        <div className={Styles.ratings}>
+                          <p>
+                            <Rating
+                              name="simple-controlled"
+                              value={subItem.rating}
+                              precision={0.5}
+                              readOnly
+                              size="small"
+                            />
+                          </p>
+                          <p>({subItem.rating_count})</p>
+                        </div>
+                        <p className={Styles.price}>{subItem.price}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+
       {data && (
         <>
           <h4
