@@ -72,7 +72,17 @@ function Sidebar() {
   }
 
   function logoutPressed() {
-    auth.logout();
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/ecomm/users/logout`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then(() => {
+        auth.logout();
+      });
   }
 
   function toggleDrawer() {

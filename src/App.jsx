@@ -36,7 +36,7 @@ const App = () => {
         <Route exact path="/signup" element={<Signup />} />
         <Route exact path="/recover-password" element={<ForgetPassword />} />
         <Route exact path="/reset-password/:token" element={<ResetPassword />} />
-        {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     );
   } else {
