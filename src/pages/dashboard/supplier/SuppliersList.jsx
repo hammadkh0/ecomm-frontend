@@ -54,7 +54,7 @@ function SuppliersList() {
   function findSuppliers(e) {
     e.preventDefault();
     setOpen(true);
-
+    localStorage.removeItem("alibabaData");
     var data = {
       input_term: search,
       pages: maxPage || 1,
@@ -72,8 +72,8 @@ function SuppliersList() {
       .then((res) => res.json())
       .then((data) => {
         console.log("🚀 ~ file: Supplier.jsx:52 ~ .then ~ data", data);
-        setProducts(data.results);
         localStorage.setItem("alibabaData", JSON.stringify(data.results));
+        setProducts(data.results);
         setOpen(false);
       })
       .catch((err) => {

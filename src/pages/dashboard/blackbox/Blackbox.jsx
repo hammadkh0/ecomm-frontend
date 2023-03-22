@@ -117,7 +117,7 @@ export default function Blackbox() {
 
           <p className={mainSubHeading}>that match your criteria</p>
         </div>
-        <form className={cardForm} onSubmit={(e) => submit(e)}>
+        <form className={cardForm}>
           <TextField
             label="URL"
             id="outlined-size-small"
@@ -148,7 +148,7 @@ export default function Blackbox() {
             <Button
               variant="contained"
               sx={{}}
-              type="submit"
+              onClick={submit}
               disabled={url === "" && search === ""}
             >
               Search Products
