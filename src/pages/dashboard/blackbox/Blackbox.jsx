@@ -42,19 +42,34 @@ export default function Blackbox() {
     };
 
     // console.log(data);
+    localStorage.removeItem("products");
     history("/blackbox/products", { state: data });
   }
 
-  function getProduct(e) {
+  // function getProduct(e) {
+  //   e.preventDefault();
+  //   var data = {
+  //     domain: domain,
+  //     url: url,
+  //     asin: asin,
+  //     pages: maxPage || 1,
+  //   };
+  //   history("/blackbox/products/" + asin, { state: data });
+  // }
+
+  function searchUsingASIN(e) {
     e.preventDefault();
-    var data = {
-      domain: domain,
-      url: url,
-      asin: asin,
-      pages: maxPage || 1,
-    };
-    history("/blackbox/products/" + asin, { state: data });
+    localStorage.removeItem("productDetails");
+    localStorage.removeItem("reviews");
+    localStorage.removeItem("negReviews");
+    history(`/blackbox/products/${asin}}`, {
+      state: {
+        url: "https://" + domain,
+        asin,
+      },
+    });
   }
+
   return (
     <div className={wrapper}>
       <div>
@@ -102,7 +117,7 @@ export default function Blackbox() {
 
           <p className={mainSubHeading}>that match your criteria</p>
         </div>
-        <form className={cardForm} onSubmit={(e) => submit(e)}>
+        <form className={cardForm}>
           <TextField
             label="URL"
             id="outlined-size-small"
@@ -133,7 +148,7 @@ export default function Blackbox() {
             <Button
               variant="contained"
               sx={{}}
-              type="submit"
+              onClick={submit}
               disabled={url === "" && search === ""}
             >
               Search Products
@@ -143,8 +158,8 @@ export default function Blackbox() {
       </div>
 
       <div className={card}>
-        <h3>Search Using ASIN</h3>
-        <form onSubmit={getProduct}>
+        <h3 style={{ marginBottom: 10 }}>Search Using ASIN</h3>
+        <form>
           <TextField
             label="ASIN"
             id="outlined-size-small"
@@ -154,7 +169,13 @@ export default function Blackbox() {
             onChange={(e) => setASIN(e.target.value)}
           />
           <div className={formActions}>
-            <Button variant="contained" sx={{}} type="submit" disabled={asin === ""}>
+            <Button
+              variant="contained"
+              sx={{}}
+              type="submit"
+              disabled={asin === ""}
+              onClick={searchUsingASIN}
+            >
               Search using ASIN
             </Button>
           </div>

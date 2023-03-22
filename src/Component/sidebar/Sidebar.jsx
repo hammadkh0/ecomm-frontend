@@ -1,13 +1,17 @@
 import React, { useContext, useState } from "react";
-import Dashboard from "@mui/icons-material/Dashboard";
-import Inventory from "@mui/icons-material/Inventory";
-import ProfileIcon from "@mui/icons-material/ContactPage";
-import LogoutIcon from "@mui/icons-material/MeetingRoom";
-import HamburgerIcon from "@mui/icons-material/Menu";
-import style from "./sidebar.module.scss";
-import ecomLogo from "../../Images/Logo.png";
 import { useNavigate, Link, NavLink } from "react-router-dom";
 import { AuthContext } from "../../context/auth-context";
+
+import Dashboard from "@mui/icons-material/Dashboard";
+import Inventory from "@mui/icons-material/Inventory";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import ProfileIcon from "@mui/icons-material/ContactPage";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import LogoutIcon from "@mui/icons-material/MeetingRoom";
+import HamburgerIcon from "@mui/icons-material/Menu";
+
+import style from "./sidebar.module.scss";
+import ecomLogo from "../../Images/Logo.png";
 
 function Sidebar() {
   const history = useNavigate();
@@ -40,12 +44,24 @@ function Sidebar() {
     },
     {
       id: 3,
+      name: "Product Suppliers",
+      route: "/suppliers",
+      icon: <LocalShippingIcon />,
+    },
+    {
+      id: 4,
+      name: "Market Trends",
+      route: "/trends",
+      icon: <TrendingUpIcon />,
+    },
+    {
+      id: 5,
       name: "Profile",
       route: "/profile",
       icon: <ProfileIcon />,
     },
     {
-      id: 4,
+      id: 6,
       name: "Logout",
       route: "/logout",
       icon: <LogoutIcon />,
@@ -56,7 +72,17 @@ function Sidebar() {
   }
 
   function logoutPressed() {
-    auth.logout();
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/ecomm/users/logout`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then(() => {
+        auth.logout();
+      });
   }
 
   function toggleDrawer() {
@@ -65,7 +91,7 @@ function Sidebar() {
 
   function MenuItemDesign(element) {
     element.isActive = element.route === window.location.pathname;
-    if (element.id === 4) {
+    if (element.id === 6) {
       return (
         <div
           className={element.isActive ? `${menuItem} ${activeMenu}` : menuItem}

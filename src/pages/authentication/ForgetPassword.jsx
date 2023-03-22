@@ -14,13 +14,16 @@ export default function ForgetPassword() {
     e.preventDefault();
     console.log(email);
     try {
-      const res = await fetch("http://localhost:3000/ecomm/users/forgotPassword", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/ecomm/users/forgotPassword`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
       const data = await res.json();
       console.log(data);
       if (data.status === "success") {

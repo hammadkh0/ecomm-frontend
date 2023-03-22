@@ -13,26 +13,27 @@ const columns = [
     renderCell: (params) => {
       const link = params.row.image;
       return (
-        <img style={{ width: 40, height: 40 }} src={link} alt={params.value.asin} />
+        <img style={{ width: 40, height: 40 }} src={link} alt={params.row.asin} />
       );
     },
   },
-  { field: "title", id: "title", headerName: "Title", width: 200 },
-  { field: "asin", id: "asin", headerName: "ASIN", minWidth: 150, width: 150 },
-  {
-    field: "category",
-    id: "category",
-    headerName: "Category",
-    minWidth: 200,
-    align: "right",
-  },
+  { field: "title", id: "title", headerName: "Title", width: 250 },
+  { field: "price", id: "price", headerName: "Price", width: 100 },
+  { field: "asin", id: "asin", headerName: "ASIN", minWidth: 120, width: 120 },
   {
     field: "rating",
     id: "rating",
     headerName: "Rating",
-    minWidth: 100,
-    align: "right",
+    minWidth: 70,
+    width: 70,
+
     format: (value) => value.toLocaleString("en-US"),
+  },
+  {
+    field: "categories",
+    id: "categories",
+    headerName: "Category",
+    minWidth: 400,
   },
 ];
 
@@ -42,12 +43,20 @@ export default function StickyHeadTable(props) {
 
   const handleRowClick = (params) => {
     console.log(params);
+    localStorage.removeItem("productDetails");
+    localStorage.removeItem("reviews");
+    localStorage.removeItem("negReviews");
     history(`/blackbox/products/${params.row.asin}}`, {
-      state: { asin: params.row.asin, domain: props.domain },
+      state: {
+        asin: params.row.asin,
+        domain: props.domain,
+        link: params.row.link,
+        categories: params.row.categories,
+      },
     });
   };
   return (
-    <Paper sx={{ width: "70vw", height: 460 }}>
+    <Paper sx={{ width: "100%", height: 460 }}>
       <DataGrid
         rows={rows}
         columns={columns}

@@ -18,12 +18,15 @@
     
 }
 .price {
-    font-size: 24px;
+    font-size: 20px;
+    margin-bottom: 5px;
 }
 .categories {
     font-size: 14px;
-    font-style: italic;
-    color: var(--primary-color-2-light);
+    color: var(--primary-color-2);
+    margin-bottom: 5px;
+    text-decoration: underline;
+    display: inline;
 }
 .features h3 {
     border-bottom: 1px solid;
@@ -58,6 +61,15 @@
     background-color: beige;
     border-radius: 8px;
     margin: 10px 0;
+}
+.author {
+    text-transform: uppercase;
+    font-size: 18px;
+    font-weight: bold;
+}
+.reviewBody {
+    font-weight: 100 !important;
+    font-size: 16px;
 }
 @media (max-width: 992px) {
     .mainDiv {
