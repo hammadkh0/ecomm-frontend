@@ -16,33 +16,6 @@ const Product = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  function getProductDetails() {
-    fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/products/${state.asin}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        link: state.link,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const productData = data.product;
-        console.log(data);
-        setProduct(productData);
-        setIsLoading(false);
-        setOpen(false);
-        localStorage.setItem("productDetails", JSON.stringify(productData));
-      })
-      .catch((err) => {
-        setError(err.ERROR);
-        setIsLoading(false);
-        setOpen(false);
-      });
-  }
-
   function searchProductAsin() {
     fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/products/search/${state.asin}`, {
       method: "POST",
@@ -77,11 +50,8 @@ const Product = () => {
       setIsLoading(false);
       setOpen(false);
     } else {
-      if (state.link) {
-        getProductDetails();
-      } else if (state.url) {
-        searchProductAsin();
-      }
+      console.log("fetching");
+      searchProductAsin();
     }
   }, []);
 
@@ -308,7 +278,7 @@ const Product = () => {
                 >
                   <Rating
                     name="read-only"
-                    value={review.rating}
+                    value={parseInt(review.rating)}
                     precision={0.5}
                     readOnly
                   />
@@ -333,7 +303,7 @@ const Product = () => {
                 >
                   <Rating
                     name="read-only"
-                    value={review.rating}
+                    value={parseInt(review.rating)}
                     precision={0.5}
                     readOnly
                   />
