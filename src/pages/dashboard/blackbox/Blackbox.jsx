@@ -5,9 +5,7 @@ import {
   Button,
   FormControl,
   InputLabel,
-  MenuItem,
   NativeSelect,
-  Select,
   TextField,
 } from "@mui/material";
 
@@ -64,7 +62,7 @@ export default function Blackbox() {
     localStorage.removeItem("negReviews");
     history(`/blackbox/products/${asin}}`, {
       state: {
-        url: "https://" + domain,
+        url: `https://${domain}/dp/`,
         asin,
       },
     });
