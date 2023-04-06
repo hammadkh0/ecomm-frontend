@@ -41,7 +41,7 @@ function Login() {
         toastSuccess("Login Successful!");
         const user = responseData.data.user;
         setTimeout(() => {
-          auth.login(user._id, responseData.token, user.name);
+          auth.login(user._id, user.role, responseData.token, user.name);
         }, 1500);
       } else {
         toastError(responseData.message);

@@ -1,5 +1,11 @@
 import React, { useEffect } from "react";
-import { Router, Routes, Route, useNavigate, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useNavigate,
+  Navigate,
+} from "react-router-dom";
 import { AuthContext } from "./context/auth-context";
 import { useAuth } from "./hooks/auth-hook";
 
@@ -25,17 +31,17 @@ import Admin from "./pages/admin/Admin";
 import Page404 from "./utils/404";
 
 const App = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  let { token, login, logout, userId, name } = useAuth();
-  token = localStorage.getItem("userData").token;
-  useEffect(() => {
-    if (!token) {
-      navigate("/login");
-    } else {
-      navigate("/dashboard");
-    }
-  }, [token, navigate]);
+  let { token, login, logout, userId, role, name } = useAuth();
+  const isUser = role === "user";
+  // useEffect(() => {
+  //   if (!token) {
+  //     navigate("/login");
+  //   } else {
+  //     navigate("/dashboard");
+  //   }
+  // }, [token, navigate]);
 
   let routes;
   if (!token) {
@@ -49,12 +55,10 @@ const App = () => {
         <Route path="*" element={<Page404 />} />
       </Routes>
     );
-  } else {
+  } else if (isUser) {
     routes = (
       <Routes>
         <Route exact path="/" element={<Homepage />} />
-        <Route exact path="/admin" element={<Admin />} />
-
         <Route path="/" element={<SideBarLayout />}>
           <Route exact path="/dashboard" element={<Dashboard />} />
           <Route exact path="/blackbox" element={<Blackbox />} />
@@ -78,6 +82,16 @@ const App = () => {
         <Route path="*" element={<Page404 />} />
       </Routes>
     );
+  } else {
+    routes = (
+      <Routes>
+        <Route exact path="/" element={<Homepage />} />
+        <Route exact path="/admin" element={<Admin />}>
+          <Route exact path="/admin/dashboard" element={<Dashboard />} />
+        </Route>
+        <Route path="*" element={<Page404 />} />
+      </Routes>
+    );
   }
   return (
     <AuthContext.Provider
@@ -90,9 +104,7 @@ const App = () => {
         name,
       }}
     >
-      <Router>
-        {routes} <Navigate to="/login" />
-      </Router>
+      <BrowserRouter>{routes}</BrowserRouter>
     </AuthContext.Provider>
   );
 };
