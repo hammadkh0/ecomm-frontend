@@ -11,6 +11,7 @@ import { useAuth } from "./hooks/auth-hook";
 
 import "react-toastify/dist/ReactToastify.css";
 
+// User Routes
 import Login from "./pages/authentication/Login";
 import Signup from "./pages/authentication/Signup";
 import ForgetPassword from "./pages/authentication/ForgetPassword";
@@ -27,7 +28,11 @@ import Favorites from "./pages/dashboard/supplier/Favorites";
 import SupplierDetails from "./pages/dashboard/supplier/SupplierDetails";
 import SupplierProductDetails from "./pages/dashboard/supplier/SupplierProductDetails";
 import Trends from "./pages/dashboard/trends/Trends";
+
+// Admin Routes
 import Admin from "./pages/admin/Admin";
+
+// Invalid URL
 import Page404 from "./utils/404";
 
 const App = () => {
@@ -86,7 +91,11 @@ const App = () => {
     routes = (
       <Routes>
         <Route exact path="/" element={<Homepage />} />
-        <Route exact path="/admin" element={<Admin />}>
+        <Route
+          exact
+          path="/admin"
+          element={token ? <Admin /> : <Navigate to="/login" />}
+        >
           <Route exact path="/admin/dashboard" element={<Dashboard />} />
         </Route>
         <Route path="*" element={<Page404 />} />

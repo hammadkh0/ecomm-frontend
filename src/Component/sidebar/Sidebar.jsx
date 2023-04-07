@@ -81,6 +81,7 @@ function Sidebar() {
     })
       .then((res) => res.json())
       .then(() => {
+        navigateTo("login");
         auth.logout();
       });
   }
@@ -135,7 +136,10 @@ function Sidebar() {
 
         <div className={menus}>
           {sidebarMenus.map((element, index) => (
-            <NavLink key={index} to={element.route}>
+            <NavLink
+              key={index}
+              to={element.name === "Logout" ? "#" : element.route}
+            >
               {MenuItemDesign(element)}
             </NavLink>
           ))}
