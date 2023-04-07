@@ -5,7 +5,7 @@ import Img3 from "../../Images/Signup_image.png";
 import EcomBuddyLogo from "../../Images/Logo.png";
 
 import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FacebookTwoTone, Google } from "@mui/icons-material";
 import { useHttpClient } from "../../hooks/http-hook";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
@@ -16,6 +16,7 @@ import { ToastContainer } from "react-toastify";
 
 export default function Signup() {
   const auth = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [inputs, setInputs] = useState({});
   const { sendRequest } = useHttpClient();
@@ -29,6 +30,7 @@ export default function Signup() {
   const responseFacebook = (response) => {
     console.log(response);
   };
+
   const googleLoginSuccess = async (data) => {
     //console.log(data.credential);
     const profile = jwtDecode(data.credential);
@@ -54,7 +56,11 @@ export default function Signup() {
     const res = await response.json();
     const user = res.data.user;
 
-    auth.login(user._id, res.token, user.name);
+    toastSuccess("Signed in successfully");
+    setTimeout(() => {
+      auth.login(user._id, user.role, res.token, user.name);
+      user.role === "user" ? navigate("/dashboard") : navigate("/admin/dashboard");
+    }, 1500);
   };
 
   const authSubmitHandler = async (event) => {
@@ -75,8 +81,12 @@ export default function Signup() {
         }
       );
       const user = responseData.data.user;
+
       toastSuccess("Signed in successfully");
-      auth.login(user._id, responseData.token, user.name);
+      setTimeout(() => {
+        auth.login(user._id, user.role, responseData.token, user.name);
+        user.role === "user" ? navigate("/dashboard") : navigate("/admin/dashboard");
+      }, 1500);
       // navigate("/dashboard");
     } catch (error) {
       toastError("Something went wrong");
