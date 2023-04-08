@@ -1,11 +1,5 @@
-import React, { useEffect } from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  useNavigate,
-  Navigate,
-} from "react-router-dom";
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthContext } from "./context/auth-context";
 import { useAuth } from "./hooks/auth-hook";
 
@@ -34,19 +28,12 @@ import Admin from "./pages/admin/Admin";
 
 // Invalid URL
 import Page404 from "./utils/404";
+import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
+import ViewUsers from "./pages/admin/add-items/ViewUsers";
 
 const App = () => {
-  // const navigate = useNavigate();
-
   let { token, login, logout, userId, role, name } = useAuth();
   const isUser = role === "user";
-  // useEffect(() => {
-  //   if (!token) {
-  //     navigate("/login");
-  //   } else {
-  //     navigate("/dashboard");
-  //   }
-  // }, [token, navigate]);
 
   let routes;
   if (!token) {
@@ -96,7 +83,8 @@ const App = () => {
           path="/admin"
           element={token ? <Admin /> : <Navigate to="/login" />}
         >
-          <Route exact path="/admin/dashboard" element={<Dashboard />} />
+          <Route exact path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route exact path="/admin/view-users" element={<ViewUsers />} />
         </Route>
         <Route path="*" element={<Page404 />} />
       </Routes>
