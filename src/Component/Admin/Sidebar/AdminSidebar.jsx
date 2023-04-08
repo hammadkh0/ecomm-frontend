@@ -216,7 +216,7 @@ const AdminSidebar = ({ open }) => {
           </Collapse>
         </NavLink>
 
-        <NavLink to="/admin/viewUsers">
+        <NavLink to="/admin/view-admins">
           <Collapse in={adminClicked} timeout="auto" unmountOnExit>
             <ListItemButton className={styles.sidebarItem} sx={{ pl: open ? 6 : 2 }}>
               <ListItemIcon>

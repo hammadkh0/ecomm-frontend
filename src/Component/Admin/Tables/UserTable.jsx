@@ -4,13 +4,13 @@ import SearchField from "../../../utils/SearchField";
 import { DataGrid } from "@mui/x-data-grid";
 
 const UserTable = ({
-  title = "View Users",
   searchValue,
   setSearchValue,
   rows,
   columns,
   pageSize,
   setPageSize,
+  type,
 }) => {
   return (
     <Box
@@ -32,7 +32,7 @@ const UserTable = ({
           gap: 1,
           borderTopRightRadius: 5,
           borderTopLeftRadius: 5,
-          backgroundColor: "primary.light",
+          backgroundColor: type === "admin" ? "#3f51b5" : "#1c8090",
         }}
       >
         <Box
@@ -50,7 +50,7 @@ const UserTable = ({
             sx={{ marginLeft: 1, color: "white" }}
           >
             <Icon sx={{ mr: 1, mb: 0.3 }} fontSize="medium" />
-            {title}
+            {type === "admin" ? "View Admins" : "View Users"}
           </Typography>
         </Box>
         <Box
