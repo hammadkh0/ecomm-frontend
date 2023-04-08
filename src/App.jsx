@@ -29,7 +29,7 @@ import Admin from "./pages/admin/Admin";
 // Invalid URL
 import Page404 from "./utils/404";
 import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
-import ViewUsers from "./pages/admin/add-items/ViewUsers";
+import ViewUsers from "./pages/admin/view-items/ViewUsers";
 
 const App = () => {
   let { token, login, logout, userId, role, name } = useAuth();
@@ -84,7 +84,16 @@ const App = () => {
           element={token ? <Admin /> : <Navigate to="/login" />}
         >
           <Route exact path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route exact path="/admin/view-users" element={<ViewUsers />} />
+          <Route
+            exact
+            path="/admin/view-users"
+            element={<ViewUsers type="user" />}
+          />
+          <Route
+            exact
+            path="/admin/view-admins"
+            element={<ViewUsers type="admin" />}
+          />
         </Route>
         <Route path="*" element={<Page404 />} />
       </Routes>

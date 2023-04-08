@@ -36,7 +36,6 @@ const ToggleBlock = ({ blocked, hide = false, type, id }) => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setIsBlocked(!isBlocked);
         setButtonTextColor(!isBlocked ? "error" : "primary");
         setLoading(false);
@@ -60,6 +59,7 @@ const ToggleBlock = ({ blocked, hide = false, type, id }) => {
           fontFamily: "poppins",
           fontSize: "10px",
           maxWidth: "80px",
+          minWidth: "80px",
           paddingLeft: 1,
         }}
       >
@@ -69,9 +69,9 @@ const ToggleBlock = ({ blocked, hide = false, type, id }) => {
         <MenuItem
           onClick={handleBlock}
           sx={{
-            minWidth: "60px",
+            minWidth: "80px",
             justifyContent: "center",
-            maxHeight: "10px",
+            maxHeight: "12px",
             fontSize: "14px",
           }}
         >
