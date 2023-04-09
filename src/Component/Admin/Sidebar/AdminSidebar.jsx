@@ -115,7 +115,7 @@ const AdminSidebar = ({ open }) => {
           {userClicked ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
 
-        <NavLink href="/admin/addUser">
+        <NavLink to="/admin/add-user">
           <Collapse in={userClicked} timeout="auto" unmountOnExit>
             <ListItemButton sx={{ pl: open ? 6 : 2 }} className={styles.sidebarItem}>
               <ListItemIcon className={styles.sidebarIcon}>
@@ -194,7 +194,7 @@ const AdminSidebar = ({ open }) => {
           {userClicked ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
 
-        <NavLink href="/admin/addUser">
+        <NavLink to="/admin/add-admin">
           <Collapse in={adminClicked} timeout="auto" unmountOnExit>
             <ListItemButton sx={{ pl: open ? 6 : 2 }} className={styles.sidebarItem}>
               <ListItemIcon className={styles.sidebarIcon}>

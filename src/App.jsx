@@ -30,6 +30,7 @@ import Admin from "./pages/admin/Admin";
 import Page404 from "./utils/404";
 import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
 import ViewUsers from "./pages/admin/view-items/ViewUsers";
+import AddUser from "./pages/admin/add-items/AddUser";
 
 const App = () => {
   let { token, login, logout, userId, role, name } = useAuth();
@@ -93,6 +94,16 @@ const App = () => {
             exact
             path="/admin/view-admins"
             element={<ViewUsers type="admin" />}
+          />
+          <Route
+            exact
+            path="/admin/add-user"
+            element={<AddUser userType="user" />}
+          />
+          <Route
+            exact
+            path="/admin/add-admin"
+            element={<AddUser userType="admin" />}
           />
         </Route>
         <Route path="*" element={<Page404 />} />
