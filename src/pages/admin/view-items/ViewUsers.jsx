@@ -99,6 +99,7 @@ const ViewUsers = (props) => {
             warningText="This action cannot be undone!"
             id={params.row.id}
             onDeleteRow={deleteRow}
+            userType={props.type}
           />
         </div>
       ),

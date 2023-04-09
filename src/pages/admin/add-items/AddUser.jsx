@@ -9,7 +9,7 @@ import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import { AuthContext } from "../../../context/auth-context";
 import { toastError, toastSuccess } from "../../../utils/toast-message";
 import { ToastContainer } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const AddUser = ({ userType, edit = false }) => {
   const [action, setAction] = useState("Add");
@@ -17,15 +17,8 @@ const AddUser = ({ userType, edit = false }) => {
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (edit) {
-      setAction("Edit");
-    }
-
-    return () => {
-      setAction("Add");
-    };
-  }, []);
+  // get the dynamic id from the url : /admin/edit-user/:id
+  const { id } = useParams();
 
   const {
     handleSubmit,
@@ -38,9 +31,43 @@ const AddUser = ({ userType, edit = false }) => {
     mode: "onChange",
   });
 
+  useEffect(() => {
+    if (edit) {
+      setAction("Edit");
+      // fetch the user data and set the form values
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/ecomm/users/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${auth.token}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "success") {
+            // set the form values
+            const user = data.data.user;
+            setValue("name", user.name);
+            setValue("email", user.email);
+            setValue("password", user.password);
+            setValue("confirmPassword", user.password);
+            setValue("role", user.role);
+          } else {
+            toastError(data.message);
+          }
+        });
+    }
+
+    return () => {
+      setAction("Add");
+      reset();
+    };
+  }, [edit, id, setValue, reset, auth.token]);
+
   const onSubmit = (formData) => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/ecomm/users/createUser`, {
-      method: "POST",
+    const url = !edit ? "ecomm/users/createUser" : `ecomm/users/${id}`;
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/${url}`, {
+      method: !edit ? "POST" : "PATCH",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${auth.token}`,
@@ -50,13 +77,13 @@ const AddUser = ({ userType, edit = false }) => {
         email: formData.email,
         password: formData.password,
         passwordConfirm: formData.confirmPassword,
-        role: userType === "admin" ? "admin" : "user",
+        role: formData.role,
       }),
     })
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "success") {
-          toastSuccess(userType + " added successfully");
+          toastSuccess(`${userType} ${action}ed successfully`);
           reset();
           setTimeout(() => {
             navigate(`/admin/view-${userType}s`);
@@ -87,6 +114,7 @@ const AddUser = ({ userType, edit = false }) => {
                 setValue={setValue}
                 errors={errors}
                 edit={edit}
+                userType={userType}
               />
               <Grid item xs={12} textAlign={"center"} sx={{ mt: 2, p: 2 }}>
                 <button type="submit" className={styles.formButton}>

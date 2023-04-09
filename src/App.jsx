@@ -102,8 +102,18 @@ const App = () => {
           />
           <Route
             exact
+            path="/admin/edit-user/:id"
+            element={<AddUser userType="user" edit={true} />}
+          />
+          <Route
+            exact
             path="/admin/add-admin"
             element={<AddUser userType="admin" />}
+          />
+          <Route
+            exact
+            path="/admin/edit-admin/:id"
+            element={<AddUser userType="admin" edit={true} />}
           />
         </Route>
         <Route path="*" element={<Page404 />} />

@@ -2,16 +2,17 @@ import React from "react";
 import { Delete, Edit } from "@mui/icons-material";
 import { Box, Tooltip } from "@mui/material";
 import ConfirmationModal from "./ConfirmationModal";
+import { useNavigate } from "react-router-dom";
 
 const UserActions = (props) => {
   const [open, setOpen] = React.useState(false);
+  const navigate = useNavigate();
 
   const handleEdit = () => {
-    console.log("Edit");
+    navigate(`/admin/edit-${props.userType}/${props.id}`);
   };
 
   const handleDelete = () => {
-    console.log("Delete");
     props.onDeleteRow(props.id);
     setOpen(false);
   };
