@@ -1,12 +1,20 @@
-import { Grid, IconButton, InputAdornment, InputLabel } from "@mui/material";
+import {
+  Grid,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+} from "@mui/material";
 import React, { useEffect } from "react";
 import TextInput from "../../../Component/Inputs/TextInput";
 import { AlternateEmail, Visibility, VisibilityOff } from "@mui/icons-material";
+import ControlledSelect from "../../../Component/Inputs/ControlledSelect";
 
-const UserForm = ({ control, getValues, setValue, errors, edit }) => {
+const UserForm = ({ control, getValues, errors, edit, userType }) => {
   const [action, setAction] = React.useState("Enter");
   const [showPassword, setShowPassword] = React.useState("password");
   const [showConfirmPassword, setShowConfirmPassword] = React.useState("password");
+  const [role, setRole] = React.useState(userType);
 
   useEffect(() => {
     if (edit) {
@@ -16,8 +24,11 @@ const UserForm = ({ control, getValues, setValue, errors, edit }) => {
     // cleanup function
     return () => {
       setAction("Enter");
+      setRole(userType);
+      setShowPassword("password");
+      setShowConfirmPassword("password");
     };
-  }, [edit]);
+  }, [edit, userType]);
 
   const passwordDisplay = () => {
     showPassword === "text" ? setShowPassword("password") : setShowPassword("text");
@@ -65,7 +76,6 @@ const UserForm = ({ control, getValues, setValue, errors, edit }) => {
           htmlFor="email"
           variant="standard"
           required={action === "Enter" ? true : false}
-          disabled={action === "Enter" ? false : true}
           sx={{
             mb: 1.5,
             color: "text.primary",
@@ -76,7 +86,6 @@ const UserForm = ({ control, getValues, setValue, errors, edit }) => {
         </InputLabel>
         <TextInput
           required={action === "Enter" ? true : false}
-          disabled={action === "Enter" ? false : true}
           control={control}
           pattern={/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/}
           name="email"
@@ -189,6 +198,52 @@ const UserForm = ({ control, getValues, setValue, errors, edit }) => {
           }
         />
       </Grid>
+
+      {/* ------------------------------ USER ROLE ---------------------*/}
+      {edit && (
+        <Grid item xs={12}>
+          <InputLabel
+            htmlFor="userType"
+            variant="standard"
+            required
+            sx={{
+              mb: 1.5,
+              color: "text.primary",
+              "& span": { color: "error.light" },
+            }}
+          >
+            User Role
+          </InputLabel>
+          <ControlledSelect
+            control={control}
+            required
+            name="userType"
+            id="userType"
+            autoComplete="userType"
+            defaultValue={role}
+            fullWidth
+          >
+            <MenuItem
+              value={"user"}
+              onClick={() => {
+                setRole("user");
+              }}
+            >
+              User
+            </MenuItem>
+
+            <MenuItem
+              value={"admin"}
+              selected
+              onClick={() => {
+                setRole("admin");
+              }}
+            >
+              Admin
+            </MenuItem>
+          </ControlledSelect>
+        </Grid>
+      )}
     </>
   );
 };
