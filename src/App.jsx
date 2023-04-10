@@ -1,16 +1,11 @@
-import React, { useEffect } from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  useNavigate,
-  Navigate,
-} from "react-router-dom";
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthContext } from "./context/auth-context";
 import { useAuth } from "./hooks/auth-hook";
 
 import "react-toastify/dist/ReactToastify.css";
 
+// User Routes
 import Login from "./pages/authentication/Login";
 import Signup from "./pages/authentication/Signup";
 import ForgetPassword from "./pages/authentication/ForgetPassword";
@@ -27,21 +22,19 @@ import Favorites from "./pages/dashboard/supplier/Favorites";
 import SupplierDetails from "./pages/dashboard/supplier/SupplierDetails";
 import SupplierProductDetails from "./pages/dashboard/supplier/SupplierProductDetails";
 import Trends from "./pages/dashboard/trends/Trends";
+
+// Admin Routes
 import Admin from "./pages/admin/Admin";
+
+// Invalid URL
 import Page404 from "./utils/404";
+import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
+import ViewUsers from "./pages/admin/view-items/ViewUsers";
+import AddUser from "./pages/admin/add-items/AddUser";
 
 const App = () => {
-  // const navigate = useNavigate();
-
   let { token, login, logout, userId, role, name } = useAuth();
   const isUser = role === "user";
-  // useEffect(() => {
-  //   if (!token) {
-  //     navigate("/login");
-  //   } else {
-  //     navigate("/dashboard");
-  //   }
-  // }, [token, navigate]);
 
   let routes;
   if (!token) {
@@ -86,8 +79,42 @@ const App = () => {
     routes = (
       <Routes>
         <Route exact path="/" element={<Homepage />} />
-        <Route exact path="/admin" element={<Admin />}>
-          <Route exact path="/admin/dashboard" element={<Dashboard />} />
+        <Route
+          exact
+          path="/admin"
+          element={token ? <Admin /> : <Navigate to="/login" />}
+        >
+          <Route exact path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route
+            exact
+            path="/admin/view-users"
+            element={<ViewUsers type="user" />}
+          />
+          <Route
+            exact
+            path="/admin/view-admins"
+            element={<ViewUsers type="admin" />}
+          />
+          <Route
+            exact
+            path="/admin/add-user"
+            element={<AddUser userType="user" />}
+          />
+          <Route
+            exact
+            path="/admin/edit-user/:id"
+            element={<AddUser userType="user" edit={true} />}
+          />
+          <Route
+            exact
+            path="/admin/add-admin"
+            element={<AddUser userType="admin" />}
+          />
+          <Route
+            exact
+            path="/admin/edit-admin/:id"
+            element={<AddUser userType="admin" edit={true} />}
+          />
         </Route>
         <Route path="*" element={<Page404 />} />
       </Routes>
