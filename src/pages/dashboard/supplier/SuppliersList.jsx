@@ -116,9 +116,9 @@ function SuppliersList() {
 
   return (
     <div className={wrapper}>
+      <h2 className={mainSubHeading}>Find suppliers on Alibaba</h2>
       <div className={card}>
         <div className={cardHeader}>
-          <h2 className={mainSubHeading}>Find suppliers on Alibaba</h2>
           <p>Enter the keywords to find the suppliers for the products</p>
         </div>
         <form className={cardForm} onSubmit={(e) => {}}>
