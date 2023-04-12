@@ -100,10 +100,9 @@ const Trends = () => {
     <div
       style={{
         width: "90%",
-        margin: "1rem",
       }}
     >
-      <h1>Find different Trends</h1>
+      <h2>Find different Trends</h2>
       <div id="card" className={Styles.card}>
         <h3 style={{ marginBottom: 10 }}>Search Using Keywords</h3>
 

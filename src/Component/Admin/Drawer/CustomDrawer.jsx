@@ -15,7 +15,6 @@ import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar from "@mui/material/AppBar";
 
 import Logo from "../../../Images/Logo.png";
-import AdminSidebar from "../Sidebar/AdminSidebar";
 
 export const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -26,7 +25,7 @@ export const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
-const CustomDrawer = () => {
+const CustomDrawer = (props) => {
   const theme = useTheme();
 
   const drawerWidth = 240;
@@ -128,7 +127,7 @@ const CustomDrawer = () => {
               fontWeight: "bold",
             }}
           >
-            Admin Dashboard
+            {props.userType} Dashboard
           </Typography>
         </Toolbar>
         <Divider />
@@ -144,7 +143,7 @@ const CustomDrawer = () => {
         </DrawerHeader>
         <Divider />
 
-        <AdminSidebar open={open} />
+        <props.Sidebar open={open} />
       </Drawer>
     </>
   );

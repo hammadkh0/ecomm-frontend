@@ -5,7 +5,8 @@ import {
   Button,
   FormControl,
   InputLabel,
-  NativeSelect,
+  MenuItem,
+  Select,
   TextField,
 } from "@mui/material";
 
@@ -82,7 +83,7 @@ export default function Blackbox() {
           <p className={mainSubHeading}>Find products on</p>
           <FormControl sx={{ m: 1, minWidth: 120, marginTop: 0 }} size="small">
             <InputLabel id="demo-select-small">Domain</InputLabel>
-            {/* <Select
+            <Select
               labelId="demo-select-small"
               id="demo-select-small"
               value={domain}
@@ -92,25 +93,10 @@ export default function Blackbox() {
                 setDomain(e.target.value);
               }}
             >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
               <MenuItem value={"amazon.com"}>amazon.com</MenuItem>
               <MenuItem value={"amazon.cd"}>amazon.cd</MenuItem>
               <MenuItem value={"amazon.au"}>amazon.in</MenuItem>
-            </Select> */}
-            <NativeSelect
-              defaultValue={"amazon.com"}
-              inputProps={{
-                name: "age",
-                id: "uncontrolled-native",
-              }}
-            >
-              <option value={"amazon.com"}>amazon.com</option>
-              <option value={"amazon.de"}>amazon.de</option>
-              <option value={"amazon.fr"}>amazon.fr</option>
-              <option value={"amazon.in"}>amazon.in</option>
-            </NativeSelect>
+            </Select>
           </FormControl>
 
           <p className={mainSubHeading}>that match your criteria</p>
