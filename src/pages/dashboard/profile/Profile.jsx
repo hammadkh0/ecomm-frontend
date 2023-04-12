@@ -241,20 +241,20 @@ function Main_profile() {
                 }}
               />
             </div>
-          </div>
-          <div>
-            <Button
-              sx={{
-                backgroundColor: "#1C8090",
-                borderRadius: "8px",
-                ":hover": { backgroundColor: "#1C8090" },
-              }}
-              variant="contained"
-              type="submit"
-              disabled={!name.length && !email.length}
-            >
-              Update
-            </Button>
+            <div>
+              <Button
+                sx={{
+                  backgroundColor: "#1C8090",
+                  borderRadius: "8px",
+                  ":hover": { backgroundColor: "#1C8090" },
+                }}
+                variant="contained"
+                type="submit"
+                disabled={!name.length && !email.length}
+              >
+                Update Profile
+              </Button>
+            </div>
           </div>
         </form>
       </div>
@@ -303,21 +303,21 @@ function Main_profile() {
                 }}
               />
             </div>
-          </div>
 
-          <div>
-            <Button
-              sx={{
-                backgroundColor: "#1C8090",
-                borderRadius: "8px",
-                ":hover": { backgroundColor: "#1C8090" },
-              }}
-              variant="contained"
-              type="submit"
-              disabled={!password.length && !passwordConfirm.length}
-            >
-              Update Password
-            </Button>
+            <div>
+              <Button
+                sx={{
+                  backgroundColor: "#1C8090",
+                  borderRadius: "8px",
+                  ":hover": { backgroundColor: "#1C8090" },
+                }}
+                variant="contained"
+                type="submit"
+                disabled={!password.length && !passwordConfirm.length}
+              >
+                Update Password
+              </Button>
+            </div>
           </div>
         </form>
       </div>

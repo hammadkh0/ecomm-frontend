@@ -1,37 +1,44 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthContext } from "./context/auth-context";
 import { useAuth } from "./hooks/auth-hook";
 
 import "react-toastify/dist/ReactToastify.css";
+import { CircularProgress } from "@mui/material";
 
 // User Routes
-import Login from "./pages/authentication/Login";
-import Signup from "./pages/authentication/Signup";
-import ForgetPassword from "./pages/authentication/ForgetPassword";
-import Homepage from "./pages/landing/Homepage";
-import Dashboard from "./pages/dashboard/Dashboard";
-import Blackbox from "./pages/dashboard/blackbox/Blackbox";
-import ProductList from "./pages/dashboard/blackbox/ProductList";
-import Profile from "./pages/dashboard/profile/Profile";
-import SideBarLayout from "./Component/Layout/SideBarLayout";
-import ResetPassword from "./pages/authentication/ResetPassword";
-import Product from "./pages/dashboard/blackbox/Product";
-import SuppliersList from "./pages/dashboard/supplier/SuppliersList";
-import Favorites from "./pages/dashboard/supplier/Favorites";
-import SupplierDetails from "./pages/dashboard/supplier/SupplierDetails";
-import SupplierProductDetails from "./pages/dashboard/supplier/SupplierProductDetails";
-import Trends from "./pages/dashboard/trends/Trends";
-import ProductListing from "./pages/dashboard/listings/ProductListing";
+const Login = lazy(() => import("./pages/authentication/Login"));
+const Signup = lazy(() => import("./pages/authentication/Signup"));
+const ForgetPassword = lazy(() => import("./pages/authentication/ForgetPassword"));
+const Homepage = lazy(() => import("./pages/landing/Homepage"));
+const Dashboard = lazy(() => import("./pages/dashboard/Dashboard"));
+const Blackbox = lazy(() => import("./pages/dashboard/blackbox/Blackbox"));
+const ProductList = lazy(() => import("./pages/dashboard/blackbox/ProductList"));
+const Profile = lazy(() => import("./pages/dashboard/profile/Profile"));
+const SideBarLayout = lazy(() => import("./Component/Layout/SideBarLayout"));
+const ResetPassword = lazy(() => import("./pages/authentication/ResetPassword"));
+const Product = lazy(() => import("./pages/dashboard/blackbox/Product"));
+const SuppliersList = lazy(() => import("./pages/dashboard/supplier/SuppliersList"));
+const Favorites = lazy(() => import("./pages/dashboard/supplier/Favorites"));
+const SupplierDetails = lazy(() =>
+  import("./pages/dashboard/supplier/SupplierDetails")
+);
+const SupplierProductDetails = lazy(() =>
+  import("./pages/dashboard/supplier/SupplierProductDetails")
+);
+const Trends = lazy(() => import("./pages/dashboard/trends/Trends"));
+const ProductListing = lazy(() =>
+  import("./pages/dashboard/listings/ProductListing")
+);
 
 // Admin Routes
-import Admin from "./pages/admin/Admin";
-import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
-import ViewUsers from "./pages/admin/view-items/ViewUsers";
-import AddUser from "./pages/admin/add-items/AddUser";
+const Admin = lazy(() => import("./pages/admin/Admin"));
+const AdminDashboard = lazy(() => import("./pages/admin/dashboard/AdminDashboard"));
+const ViewUsers = lazy(() => import("./pages/admin/view-items/ViewUsers"));
+const AddUser = lazy(() => import("./pages/admin/add-items/AddUser"));
 
 // Invalid URL
-import Page404 from "./utils/404";
+const Page404 = lazy(() => import("./utils/404"));
 
 const App = () => {
   let { token, login, logout, userId, role, name } = useAuth();
@@ -133,7 +140,9 @@ const App = () => {
         name,
       }}
     >
-      <BrowserRouter>{routes}</BrowserRouter>
+      <BrowserRouter>
+        <Suspense fallback={<CircularProgress />}>{routes}</Suspense>
+      </BrowserRouter>
     </AuthContext.Provider>
   );
 };

@@ -128,22 +128,22 @@ export default function Blackbox() {
             inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
           />
 
-          <div className={formActions}>
-            <Button
-              variant="contained"
-              sx={{}}
-              onClick={submit}
-              disabled={url === "" && search === ""}
-            >
-              Search Products
-            </Button>
-          </div>
+          {/* <div className={formActions}> */}
+          <Button
+            variant="contained"
+            sx={{}}
+            onClick={submit}
+            disabled={url === "" && search === ""}
+          >
+            Search Products
+          </Button>
+          {/* </div> */}
         </form>
       </div>
 
       <div className={card}>
         <h3 style={{ marginBottom: 10 }}>Search Using ASIN</h3>
-        <form>
+        <form className={cardForm}>
           <TextField
             label="ASIN"
             id="outlined-size-small"
@@ -152,17 +152,17 @@ export default function Blackbox() {
             value={asin}
             onChange={(e) => setASIN(e.target.value)}
           />
-          <div className={formActions}>
-            <Button
-              variant="contained"
-              sx={{}}
-              type="submit"
-              disabled={asin === ""}
-              onClick={searchUsingASIN}
-            >
-              Search using ASIN
-            </Button>
-          </div>
+          {/* <div className={formActions}> */}
+          <Button
+            variant="contained"
+            sx={{}}
+            type="submit"
+            disabled={asin === ""}
+            onClick={searchUsingASIN}
+          >
+            Search using ASIN
+          </Button>
+          {/* </div> */}
         </form>
       </div>
     </div>
