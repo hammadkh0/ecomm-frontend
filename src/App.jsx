@@ -22,15 +22,16 @@ import Favorites from "./pages/dashboard/supplier/Favorites";
 import SupplierDetails from "./pages/dashboard/supplier/SupplierDetails";
 import SupplierProductDetails from "./pages/dashboard/supplier/SupplierProductDetails";
 import Trends from "./pages/dashboard/trends/Trends";
+import ProductListing from "./pages/dashboard/listings/ProductListing";
 
 // Admin Routes
 import Admin from "./pages/admin/Admin";
-
-// Invalid URL
-import Page404 from "./utils/404";
 import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
 import ViewUsers from "./pages/admin/view-items/ViewUsers";
 import AddUser from "./pages/admin/add-items/AddUser";
+
+// Invalid URL
+import Page404 from "./utils/404";
 
 const App = () => {
   let { token, login, logout, userId, role, name } = useAuth();
@@ -69,6 +70,7 @@ const App = () => {
             path="/suppliers/product/details"
             element={<SupplierProductDetails />}
           />
+          <Route exact path="/product-listing" element={<ProductListing />} />
           <Route exact path="/trends" element={<Trends />} />
           <Route exact path="/profile" element={<Profile />} />
         </Route>
