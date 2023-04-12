@@ -1,7 +1,6 @@
 import * as React from "react";
 import Paper from "@mui/material/Paper";
 import { DataGrid } from "@mui/x-data-grid";
-import { Avatar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const columns = [
@@ -50,7 +49,7 @@ export default function StickyHeadTable(props) {
       state: {
         asin: params.row.asin,
         domain: props.domain,
-        link: params.row.link,
+        url: `https://${props.domain}/dp/`,
         categories: params.row.categories,
       },
     });

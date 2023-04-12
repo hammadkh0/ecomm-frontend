@@ -6,6 +6,7 @@ export const useAuth = () => {
   const [name, setName] = useState();
   const [token, setToken] = useState();
   const [userId, setUserId] = useState(null);
+  const [role, setRole] = useState(null); // [admin, user]
   const [tokenExp, setTokenExp] = useState();
 
   const updateContext = (username = null, token = null) => {
@@ -21,14 +22,15 @@ export const useAuth = () => {
 
     localStorage.setItem("userData", JSON.stringify(storedData));
   };
-  const login = useCallback((uid, token, name, expirationDate) => {
+  const login = useCallback((userId, role, token, name, expirationDate) => {
     setToken(token);
-    setUserId(uid);
+    setUserId(userId);
+    setRole(role);
     setName(name);
     const tokenExpirationDate =
-      expirationDate || new Date(new Date().getTime() + 1000 * 60 * 60);
+      expirationDate || new Date(new Date().getTime() + 1000 * 60 * 60 * 24);
     /* 
-      -> new Date is generated with the value = 1000ms = 1s * 60 = 1min * 60 = 60min/1hr
+      -> new Date is generated with the value = 1000ms = 1s * 60 = 1min * 60 = 60min/1hr * 24 = 24hrs/1day
          or an existing expiration date provided. 
       -> This calculated time is generated when user logs in for the first time and not for every refresh of
          the app and stored in local storage along with the token and userId.
@@ -39,7 +41,8 @@ export const useAuth = () => {
     localStorage.setItem(
       "userData",
       JSON.stringify({
-        userId: uid,
+        userId: userId,
+        role: role,
         token: token,
         name: name,
         expiration: tokenExpirationDate.toISOString(),
@@ -48,11 +51,22 @@ export const useAuth = () => {
   }, []);
 
   const logout = useCallback(() => {
-    setToken(null);
-    setUserId(null);
-    setTokenExp(null);
-    setName(null);
-    localStorage.removeItem("userData");
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/ecomm/users/logout`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then(() => {
+        setToken(null);
+        setUserId(null);
+        setRole(null);
+        setTokenExp(null);
+        setName(null);
+        localStorage.removeItem("userData");
+      });
   }, []);
 
   useEffect(() => {
@@ -63,7 +77,8 @@ export const useAuth = () => {
       new Date(storedData.expiration) > new Date()
     ) {
       login(
-        storedData.userId,
+        storedData.user,
+        storedData.role,
         storedData.token,
         storedData.name,
         new Date(storedData.expiration)
@@ -80,5 +95,5 @@ export const useAuth = () => {
     }
   }, [login, logout, token, tokenExp]);
 
-  return { login, logout, token, userId, name, updateContext };
+  return { login, logout, token, userId, role, name, updateContext };
 };

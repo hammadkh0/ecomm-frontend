@@ -1,5 +1,5 @@
 .wrapper {
-    width: 75%;
+    width: 100%;
     padding-top: 20px;
     padding-right: 20px;
 }
@@ -10,7 +10,7 @@
     letter-spacing: normal;
     padding: 0px;
     text-transform: none;
-    font-size: 32px;
+    font-size: 28px;
     line-height: 40px;
     color: rgb(19, 25, 31);
     font-weight: 800;
