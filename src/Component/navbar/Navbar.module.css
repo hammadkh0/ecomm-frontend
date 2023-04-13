@@ -1,4 +1,4 @@
-.navbar-container {
+.navbarContainer {
   width: 100%;
 }
 
@@ -11,25 +11,25 @@
   /* background-color: rgb(142, 142, 255,0.4); */
 }
 
-.navbar-logo {
+.navbarLogo {
   width: 120px;
 }
 
-.logo-links-container {
+.logoLinksContainer {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.desktop-navbar-links {
+.desktopNavbarLinks {
   color: var(--primary-color-1);
 }
 
-.mobile-navbar-links {
+.mobileNavbarLinks {
   display: none;
 }
 
-.desktop-navbar-links ul {
+.desktopNavbarLinks ul {
   list-style: none;
   display: flex;
   gap: 40px;
@@ -37,98 +37,103 @@
   margin-left: 10px;
 }
 
-.desktop-navbar-links ul li a {
+.desktopNavbarLinks ul li a {
   text-decoration: none;
   color: var(--primary-color-1);
   transition: border-color 2s ease-in-out;
   
 }
 
-.desktop-navbar-links ul li p:hover {
+.desktopNavbarLinks ul li p:hover {
   cursor: pointer;
   color: var(--primary-color-2-light);
   border-bottom: 1px solid;
 
 }
 
-.navbar-btns {
+.navbarBtns {
   display: flex;
   align-items: flex-end;
   gap: 5px;
 }
 
-/* .navbar-btns button {
-  padding: 12px 40px;
-  border-radius: 10px;
-  border: none;
-} */
+.navbarBtns button {
+  padding: 10px 30px;
+  border-radius: 6px;
+  /* border: none; */
+}
 
-.login-btn {
+.loginBtn {
   font-size: 16px;
   font-weight: 600;
   background: none;
-  color: var(--primary-color-1);
+  color: var(--primary-color-2);
   cursor: pointer;
   border: 1px solid var(--primary-color-2);
+  font-family: poppins;
+
 }
-.login-btn:hover {
+.loginBtn:hover {
   background-color: var(--primary-color-2-light);
   color: white;
   border-color: var(--primary-color-2-light);
 }
 
-.signup-btn {
+.signupBtn {
   font-size: 16px;
   cursor: pointer;
   background: var(--primary-color-2);
   color: #fff;
+  border: 1px solid var(--primary-color-2);
+  font-family: poppins;
+
 }
 
-.signup-btn:hover {
+.signupBtn:hover {
   background: var(--primary-color-2-light);
 }
-.user-info {
+.userInfo {
   display: flex;
   gap: 10px;
 }
 
 @media only screen and (max-width: 950px) {
-  .navbar-logo {
+  .navbarLogo {
     width: 100px;
   }
 
-  .navbar-btns button {
+  .navbarBtns button {
     padding: 10px 15px;
     font-size: 14px;
   }
 
-  .desktop-navbar-links ul li a {
+  .desktopNavbarLinks ul li a {
     font-size: 14px;
   }
 }
 
 @media only screen and (max-width: 768px) {
-  .navbar-logo {
+  .navbarLogo {
     width: 80px;
   }
 
-  .desktop-navbar-links {
+  .desktopNavbarLinks {
     display: none;
   }
 
-  .signup-btn {
+  .signupBtn {
     font-size: 12px;
     font-weight: 400;
   }
 
-  .mobile-navbar-links {
+  .mobileNavbarLinks {
     display: flex;
     color: var(--primary-color-1);
     justify-content: center;
     margin: 20px 0px;
   }
 
-  .mobile-navbar-links ul {
+  .mobileNavbarLinks ul {
     list-style: none;
     display: flex;
     justify-content: space-between;
@@ -137,12 +142,12 @@
     font-weight: 500;
   }
 
-  .mobile-navbar-links ul li a {
+  .mobileNavbarLinks ul li a {
     text-decoration: none;
     color: var(--primary-color-1);
   }
 
-  .navbar-container {
+  .navbarContainer {
     padding: 0px 0px;
     width: 100vw;
   }
