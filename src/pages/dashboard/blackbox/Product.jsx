@@ -1,4 +1,4 @@
-import { Button, Rating } from "@mui/material";
+import { Button, CircularProgress, Rating } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import TransitionsModal from "../../../Component/featureSection/utils/Modal/Modal";
@@ -11,8 +11,12 @@ const Product = () => {
   const [reviews, setReviews] = useState([]);
   const [negativeReviews, setNegativeReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [open, setOpen] = React.useState(true);
-  const [error, setError] = React.useState();
+  const [open, setOpen] = useState(true);
+  const [error, setError] = useState();
+  const [streamLoading, setStreamLoading] = useState(false);
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [analyzedReviews, setAnalyzedReviews] = useState(0);
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -91,38 +95,64 @@ const Product = () => {
     }
   };
 
-  const findNegativeReviews = () => {
+  const fetchSetimentResults = async () => {
     setOpen(true);
-    const rews = localStorage.getItem("negReviews");
-    if (rews) {
-      setNegativeReviews(JSON.parse(rews));
-      setIsLoading(false);
-      setOpen(false);
+    const url = `${import.meta.env.VITE_FLASK_URL}/ecomm/sentiment`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ reviews: reviews }), // Assuming `reviewsData` is the list of reviews data
+    });
+
+    // Create a ReadableStream from the response body
+    const reader = response.body.getReader();
+
+    // Define a function to recursively read the streamed JSON responses
+    const readStream = async () => {
+      const { done, value } = await reader.read();
+
+      if (done) {
+        // Stream has ended, return or process the final result
+        localStorage.setItem("negReviews", JSON.stringify(negativeReviews));
+        setStreamLoading(false);
+        console.log("Stream has ended");
+        return;
+      }
+
+      // Convert the received chunk of data to a string
+      const chunk = new TextDecoder().decode(value);
+
+      // Split the chunk by newline to extract each JSON response
+      const responses = chunk.split("\n");
+      setTotalReviews(JSON.parse(responses[0]).total_reviews);
       setReviews([]);
-    } else {
-      fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/sentiment`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json; charset=UTF-8",
-          "Access-Control-Allow-Methods": "*",
-          "Access-Control-Allow-Origin": `${import.meta.env.VITE_FLASK_URL}`,
-        },
-        body: JSON.stringify({
-          reviews: reviews,
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setNegativeReviews(data);
-          setReviews([]);
+      setStreamLoading(true);
+
+      // Process each JSON response
+      responses.forEach((response) => {
+        if (response.trim() !== "") {
+          // Parse the JSON response and process the results
+          const result = JSON.parse(response);
+
+          // Process the results as needed (e.g., update UI)
+          console.log("Received batch of results:", result.results);
+          setAnalyzedReviews(result.analyzed);
+          setNegativeReviews((prevNegativeReviews) => [
+            ...prevNegativeReviews,
+            ...result.results,
+          ]);
           setOpen(false);
-          localStorage.setItem("negReviews", JSON.stringify(data));
-        })
-        .catch((err) => {
-          console.log(err);
-          setError(err);
-        });
-    }
+        }
+      });
+
+      // Continue reading the stream
+      return readStream();
+    };
+
+    // Start reading the stream
+    return readStream();
   };
 
   const getSummary = () => {
@@ -185,28 +215,28 @@ const Product = () => {
             src={product?.images[0]}
             alt="productImg"
           />
-          <div className={Style.headerContent}>
-            <h1 className={Style.title}>{product.title}</h1>
+          <h1 className={Style.title}>{product.title}</h1>
+        </div>
 
-            <span style={{ marginBottom: 5 }}>
-              Categories:
-              <p className={Style.categories}>{state.categories || ""}</p>
-            </span>
-            <p className={Style.price}>
-              Price:
-              <span style={{ color: "red" }}> {product.price}</span>
-            </p>
+        <div className={Style.headerContent}>
+          <span style={{ marginBottom: 5 }}>
+            Categories:
+            <p className={Style.categories}>{state.categories || ""}</p>
+          </span>
+          <p className={Style.price}>
+            Price:
+            <span style={{ color: "red" }}> {product.price}</span>
+          </p>
 
-            <div className={Style.features}>
-              <h3>Features</h3>
-              {product.attributes &&
-                product.attributes.map((attr, idx) => (
-                  <div key={idx}>
-                    <p className={Style.featureName}>{attr.name}</p>
-                    <p className={Style.feature}>{attr.value}</p>
-                  </div>
-                ))}
-            </div>
+          <div className={Style.features}>
+            <h3>Features</h3>
+            {product.attributes &&
+              product.attributes.map((attr, idx) => (
+                <div key={idx}>
+                  <p className={Style.featureName}>{attr.name}</p>
+                  <p className={Style.feature}>{attr.value}</p>
+                </div>
+              ))}
           </div>
         </div>
 
@@ -248,7 +278,7 @@ const Product = () => {
             variant="outlined"
             color="error"
             sx={{ marginLeft: "10px", marginTop: "1rem" }}
-            onClick={findNegativeReviews}
+            onClick={fetchSetimentResults}
           >
             Find Negative Reviews
           </Button>
@@ -265,7 +295,21 @@ const Product = () => {
 
         {negativeReviews.length ? (
           <div className={Style.reviews}>
-            <h3>Negative Reviews ({negativeReviews.length})</h3>
+            <h4>
+              Reviews Analyzed: {analyzedReviews}/{totalReviews}
+            </h4>
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <h4>
+                Negative Reviews: {negativeReviews.length} / {totalReviews}
+              </h4>
+              {streamLoading ? (
+                <span>
+                  <CircularProgress size={25} />
+                </span>
+              ) : (
+                <></>
+              )}
+            </div>
             {negativeReviews.map((review, idx) => (
               <div className={Style.reviewCard} key={idx}>
                 <div
