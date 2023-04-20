@@ -1,14 +1,15 @@
 .listing {
     display: flex;
+    justify-content: space-between;
+    /* gap: 3rem; */
 }
 .inputs {
-    width: 40%;
-    margin-top: 1rem;
+    width: 35%;
 }
 .form {
     display: flex;
     flex-direction: column;
-    width: 80%;
+    width: 100%;
     gap: 1rem;
 }
 .input {
@@ -24,7 +25,7 @@
 }
 .keywordsInput {
     background-color: #deecef;
-    height: 150px;
+    /* height: 150px; */
     resize: none;
 }
 .applyBtn {
@@ -32,15 +33,20 @@
     margin: auto;
     margin-top: 1rem;
     background-color: #1c8090;
-    color: white;
+    color: white;   
     border-radius: 6px;
+    text-transform: capitalize;
+    font-size: 14px;
 }
 .applyBtn:hover{
     background-color: #29c0d7;
 }
 
 .outputs {
-    width: 50%;
+    width: 55%;
+    height: 70vh;
+    overflow-y: scroll;
+    margin-right: 2rem;
 }
 .output {
     background-color: #deecef;
@@ -59,7 +65,7 @@
     font-size: 14px;
 }
 
-.outputHeading + textarea {
+.outputHeading + grammarly-editor-plugin textarea {
     width: 100%;
     padding: 8px;
     border-radius: 8px;
