@@ -87,36 +87,21 @@ function Sidebar({ open }) {
   }
 
   function MenuItemDesign(element) {
-    element.isActive = element.route === window.location.pathname;
-    if (element.id === 7) {
-      return (
-        <ListItemButton
-          className={style.sidebarItem}
-          sx={{ marginTop: 2 }}
-          onClick={() => {
-            logoutPressed();
-          }}
-        >
-          <ListItemIcon sx={{ mr: open ? -2 : "auto" }}>
-            {<element.icon className={style.sidebarIcon} />}
-          </ListItemIcon>
-          <ListItemText
-            primary={
-              <Typography
-                className={style.sidebarText}
-                sx={{
-                  opacity: open ? 1 : 0,
-                }}
-              >
-                {element.name}
-              </Typography>
-            }
-          />
-        </ListItemButton>
-      );
-    }
+    // element.isActive = element.route === window.location.pathname;
+    // if (element.id === 7) {
     return (
-      <ListItemButton className={style.sidebarItem} sx={{ marginTop: 2 }}>
+      <ListItemButton
+        className={style.sidebarItem}
+        sx={{ marginTop: 2 }}
+        onClick={
+          element.id === 7
+            ? () => {
+                logoutPressed();
+              }
+            : // : do nothing
+              null
+        }
+      >
         <ListItemIcon sx={{ mr: open ? -2 : "auto" }}>
           {<element.icon className={style.sidebarIcon} />}
         </ListItemIcon>
@@ -139,11 +124,13 @@ function Sidebar({ open }) {
   return (
     <>
       <div>
-        <List>
+        <List className={style.sidebarLink}>
           {sidebarMenus.map((element, index) => (
             <NavLink
               key={index}
-              to={element.name === "Logout" ? "#" : element.route}
+              to={element.route}
+              className={({ isActive }) => (isActive ? style.active : "")}
+              aria-current={element.name === "Logout" ? null : "page"}
             >
               {MenuItemDesign(element)}
             </NavLink>

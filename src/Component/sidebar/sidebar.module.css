@@ -1,3 +1,14 @@
+.sidebarLink a.active .sidebarItem  {
+  color: white !important;
+  background-color: var(--primary-color-2) !important;
+  min-height: 48px !important;
+  margin: 10px 10px 14px 10px !important;
+  border-radius: 10px !important;
+}
+.sidebarLink a.active .sidebarText,.sidebarLink a.active .sidebarIcon {
+  color: white !important;
+}
+
 .sidebarItem {
   min-height: 48px !important;
   margin: 10px 10px 14px 10px !important;
