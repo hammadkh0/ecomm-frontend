@@ -6,6 +6,7 @@ import { useAuth } from "./hooks/auth-hook";
 import "react-toastify/dist/ReactToastify.css";
 import { CircularProgress } from "@mui/material";
 import Logout from "./Component/Logout";
+import BackgroundRemover from "./pages/dashboard/listings/BackgroundRemover";
 
 // User Routes
 const Login = lazy(() => import("./pages/authentication/Login"));
@@ -81,6 +82,7 @@ const App = () => {
           <Route exact path="/product-listing" element={<ProductListing />} />
           <Route exact path="/trends" element={<Trends />} />
           <Route exact path="/profile" element={<Profile />} />
+          <Route exact path="/remove-bg" element={<BackgroundRemover />} />
           <Route exact path="/logout" element={<Logout />} />
         </Route>
         <Route path="*" element={<Page404 />} />

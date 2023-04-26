@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { Button } from "@mui/material";
 import { Grammarly, GrammarlyEditorPlugin } from "@grammarly/editor-sdk-react";
-import { rake } from "rake-js/dist/lib/rake";
-
 import keyword_extractor from "keyword-extractor";
 
-import styles from "./productlisting.module.css";
 import CopyToClipboard from "../../../Component/Inputs/CopyToClipboard";
+import styles from "./productlisting.module.css";
 
 const ProductListing = () => {
   const [input, setInput] = useState("");
@@ -62,17 +60,16 @@ const ProductListing = () => {
       setKeywords(myKeywords.join("\n"));
     }
   };
-
   return (
-    <div>
-      <h2>Enter the keywords</h2>
+    <>
+      <p>Enter keywords to generate listing or write your own manually</p>
       <div className={styles.listing}>
         <div className={styles.inputs}>
           <form className={styles.form}>
             <input
               type="text"
               className={[styles.textInput, styles.input].join(" ")}
-              placeholder="Enter some text"
+              placeholder="Enter some keywords"
               value={input}
               onChange={handleInput}
             />
@@ -133,7 +130,7 @@ const ProductListing = () => {
           </Grammarly>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

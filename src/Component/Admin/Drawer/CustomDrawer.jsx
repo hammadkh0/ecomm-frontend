@@ -28,7 +28,7 @@ export const DrawerHeader = styled("div")(({ theme }) => ({
 const CustomDrawer = (props) => {
   const theme = useTheme();
 
-  const drawerWidth = 240;
+  const drawerWidth = 255;
   const [open, setOpen] = React.useState(true);
 
   const handleDrawerOpen = () => {

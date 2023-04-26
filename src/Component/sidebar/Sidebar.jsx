@@ -9,6 +9,7 @@ import ProfileIcon from "@mui/icons-material/ContactPage";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import LogoutIcon from "@mui/icons-material/MeetingRoom";
 import ModeEdit from "@mui/icons-material/ModeEdit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import style from "./sidebar.module.css";
 import {
@@ -56,12 +57,18 @@ function Sidebar({ open }) {
     },
     {
       id: 6,
+      name: "Remove Background",
+      route: "/remove-bg",
+      icon: DeleteIcon,
+    },
+    {
+      id: 7,
       name: "Profile",
       route: "/profile",
       icon: ProfileIcon,
     },
     {
-      id: 7,
+      id: 8,
       name: "Logout",
       route: "/logout",
       icon: LogoutIcon,
@@ -94,7 +101,7 @@ function Sidebar({ open }) {
         className={style.sidebarItem}
         sx={{ marginTop: 2 }}
         onClick={
-          element.id === 7
+          element.id === 8
             ? () => {
                 logoutPressed();
               }
