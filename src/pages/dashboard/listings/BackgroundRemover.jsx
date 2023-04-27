@@ -9,7 +9,7 @@ import { toastError, toastInfo, toastSuccess } from "../../../utils/toast-messag
 import { ToastContainer } from "react-toastify";
 
 const thumbsContainer = {
-  width: "19%",
+  width: "22%",
   minHeight: "30%",
   overflowY: "scroll",
 };
@@ -209,6 +209,18 @@ const BackgroundRemover = () => {
     };
   };
 
+  // --------------------- Download Image -------------------------------
+  const downloadImage = () => {
+    // create a temporary anchor element
+    const anchor = document.createElement("a");
+    // set the href attribute to the object URL of the blob
+    anchor.href = selectedFile.preview;
+    // set the download attribute to the name of the file
+    anchor.download = selectedFile.name;
+    // simulate a click on the anchor element
+    anchor.click();
+  };
+
   // --------------------- UI ------------------------------------------
   return (
     <>
@@ -249,7 +261,9 @@ const BackgroundRemover = () => {
             {/* ---------------content--------------------- */}
             {files.length > 0 && (
               <div className={styles.content}>
-                <aside style={thumbsContainer}>{thumbs}</aside>
+                <aside style={thumbsContainer} className={styles.thumbsContainer}>
+                  {thumbs}
+                </aside>
                 <img
                   src={selectedFile.preview}
                   alt="selectedImage"
@@ -262,6 +276,7 @@ const BackgroundRemover = () => {
                     onClick={() => {
                       removeBackground();
                     }}
+                    className={styles.bgButton}
                   >
                     Remove Background
                   </Button>
@@ -283,7 +298,13 @@ const BackgroundRemover = () => {
                     className={styles.selectedImg}
                   />
                   <div style={{ marginTop: "auto", marginBottom: "auto" }}>
-                    <Button variant="outlined" onClick={() => {}}>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        downloadImage();
+                      }}
+                      className={styles.bgButton}
+                    >
                       Download Image
                     </Button>
                   </div>
