@@ -7,6 +7,48 @@
   --metal: #343a40;
   --metal-light: #dcdee7;
 }
+::-webkit-scrollbar {
+  width: 8px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #c1c1c1;
+  border-radius: 4px;
+}
+
+/* Styling for Edge */
+*::-webkit-scrollbar {
+  width: 8px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: #c1c1c1;
+  border-radius: 4px;
+}
+
+/* Styling for Mozilla */
+*::-moz-scrollbar {
+  width: 8px;
+  border-radius: 10px;
+  background-color: #f5f5f5;
+}
+*::-moz-scrollbar-thumb {
+  background-color: #aaa;
+  border-radius: 10px;
+}
+
+/* Styling for Opera */
+*::-o-scrollbar {
+  width: 8px;
+  border-radius: 10px;
+  background-color: #f5f5f5;
+}
+*::-o-scrollbar-thumb {
+  background-color: #aaa;
+  border-radius: 10px;
+}
 
 body {
   font-family: "Poppins", sans-serif;

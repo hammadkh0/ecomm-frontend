@@ -65,7 +65,7 @@
 }
 
 .loginBtn {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   background: none;
   color: var(--primary-color-2);
@@ -81,7 +81,7 @@
 }
 
 .signupBtn {
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
   background: var(--primary-color-2);
   color: #fff;
