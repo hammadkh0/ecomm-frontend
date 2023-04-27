@@ -18,4 +18,13 @@ function toastSuccess(message) {
   });
 }
 
-export { toastError, toastSuccess };
+function toastInfo(message) {
+  toast.info(message, {
+    position: "top-center",
+    autoClose: 500,
+    closeOnClick: true,
+    pauseOnHover: false,
+  });
+}
+
+export { toastError, toastSuccess, toastInfo };

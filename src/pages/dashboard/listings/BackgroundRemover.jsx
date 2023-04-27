@@ -4,21 +4,22 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 import styles from "./backgroundremover.module.css";
 import { Button } from "@mui/material";
+import TransitionsModal from "../../../Component/featureSection/utils/Modal/Modal";
+import { toastError, toastInfo, toastSuccess } from "../../../utils/toast-message";
+import { ToastContainer } from "react-toastify";
 
 const thumbsContainer = {
-  display: "flex",
-  flexDirection: "column",
-  marginTop: 16,
+  width: "19%",
   minHeight: "30%",
   overflowY: "scroll",
 };
 
 const thumb = {
   display: "inline-flex",
-  //   flexDirection: "column",
+  flexDirection: "column",
   borderRadius: 2,
   border: "1px solid #eaeaea",
-  marginBottom: 8,
+  // marginBottom: 8,
   marginRight: 8,
   width: 90,
   height: 90,
@@ -43,8 +44,8 @@ const removeBtn = {
   color: "white",
   borderRadius: "50%",
   border: "none",
-  width: "22px",
-  height: "22px",
+  width: "25px",
+  height: "25px",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
@@ -52,10 +53,14 @@ const removeBtn = {
 };
 
 const BackgroundRemover = () => {
+  const [open, setOpen] = useState(false);
   const [option, setOption] = useState("original");
   const [files, setFiles] = useState([]);
   const [removedBgFiles, setRemovedBgFiles] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   // -------------------- Dropzone -----------------------------------
   const { getRootProps, getInputProps } = useDropzone({
@@ -63,7 +68,6 @@ const BackgroundRemover = () => {
       "image/*": [],
     },
     multiple: true,
-    maxFiles: 7,
     onDrop: (acceptedFiles) => {
       const filteredFiles = acceptedFiles.filter(
         (file) => !files.some((f) => f.name === file.name)
@@ -77,27 +81,45 @@ const BackgroundRemover = () => {
           })
         ),
       ]);
-      console.log(filteredFiles);
-      setSelectedFile(URL.createObjectURL(filteredFiles[0]));
+      handleImageSelect(filteredFiles[0]);
     },
   });
+
+  // --------------------- Remove File -------------------------------
   const removeFile = (file) => {
-    setFiles((prevFiles) =>
-      prevFiles.filter((prevFile) => {
-        return prevFile.name !== file.name;
-      })
-    );
-    const index = files.findIndex((f) => f.name === file.name);
-    const newFile = files[index + 1] ? files[index + 1] : files[index - 1] || null;
-    handleImageSelect(newFile);
+    if (option === "original") {
+      setFiles((prevFiles) =>
+        prevFiles.filter((prevFile) => {
+          return prevFile.name !== file.name;
+        })
+      );
+      const index = files.findIndex((f) => f.name === file.name);
+      const newFile = files[index + 1] ? files[index + 1] : files[index - 1] || null;
+      setSelectedFile(newFile);
+    } else {
+      setRemovedBgFiles((prevFiles) =>
+        prevFiles.filter((prevFile) => {
+          return prevFile.name !== file.name;
+        })
+      );
+      const index = removedBgFiles.findIndex((f) => f.name === file.name);
+      const newFile = removedBgFiles[index + 1]
+        ? removedBgFiles[index + 1]
+        : removedBgFiles[index - 1] || null;
+      setSelectedFile(newFile);
+    }
   };
 
+  // --------------------- Image Select -------------------------------
   const handleImageSelect = (file) => {
     if (!file) {
       setSelectedFile(null);
+    } else {
+      setSelectedFile(Object.assign(file, { preview: URL.createObjectURL(file) }));
     }
-    setSelectedFile(URL.createObjectURL(file));
   };
+
+  // --------------------- Image Preview -------------------------------
   const images = option === "original" ? files : removedBgFiles;
   const thumbs = images.map((file) => (
     <div style={thumb} key={file.name}>
@@ -120,7 +142,7 @@ const BackgroundRemover = () => {
             removeFile(file);
           }}
         >
-          <DeleteIcon fontSize="24px" />
+          <DeleteIcon fontSize="small" />
         </button>
       </div>
     </div>
@@ -128,37 +150,78 @@ const BackgroundRemover = () => {
 
   useEffect(() => {
     // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
-    return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
-  }, [files]);
+    return () => {
+      files.forEach((file) => URL.revokeObjectURL(file.preview));
+      removedBgFiles.forEach((file) => URL.revokeObjectURL(file.preview));
+    };
+  }, []);
 
+  // --------------------- Removing Image Background Function ----------------------
   const removeBackground = async () => {
-    console.log("remove bg");
-    const data = new FormData();
-    data.append("image", selectedFile);
-
-    const response = await fetch("/ecomm/remove_background", {
-      method: "POST",
-      body: data,
-    });
-
-    const result = await response.json();
-    const outputBlob = new Blob([result.output], { type: "image/png" });
-    console.log(
-      "🚀 ~ file: BackgroundRemover.jsx:146 ~ removeBackground ~ outputBlob:",
-      outputBlob
+    // create a new empty file object
+    toastInfo("Removing background...");
+    // Convert image file to blob
+    const blob = await fetch(selectedFile.preview).then((response) =>
+      response.blob()
     );
-    const outputBlobUrl = URL.createObjectURL(outputBlob);
-    console.log(
-      "🚀 ~ file: BackgroundRemover.jsx:148 ~ removeBackground ~ outputBlobUrl:",
-      outputBlobUrl
-    );
+    const reader = new FileReader();
+    reader.readAsArrayBuffer(blob);
+
+    reader.onload = async () => {
+      // Convert ArrayBuffer to Uint8Array
+      const data = new Uint8Array(reader.result);
+
+      const response = await fetch(
+        `${import.meta.env.VITE_FLASK_URL}/ecomm/remove_background`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+          body: data,
+        }
+      );
+      // Handle response from server
+      if (!response.ok) {
+        console.error("Error:", response.statusText);
+        toastError(response.statusText);
+      } else {
+        const outputBlob = await response.blob();
+        // Create a new file from the output blob
+        const newFile = new File([outputBlob], selectedFile.name, {
+          type: "image/jpeg",
+        });
+        // Create an object url of the blob that can be used as image src
+        const outputBlobUrl = URL.createObjectURL(outputBlob);
+        // add it to list of removed background images
+        setRemovedBgFiles((prevFiles) => [
+          ...prevFiles,
+          Object.assign(newFile, {
+            ...selectedFile,
+            preview: outputBlobUrl,
+          }),
+        ]);
+
+        setOpen(false);
+        toastSuccess("Background removed successfully!");
+      }
+    };
   };
-  // --------------------- UI -----------------------------------
+
+  // --------------------- UI ------------------------------------------
   return (
     <>
+      <ToastContainer />
+      <TransitionsModal
+        open={open}
+        handleClose={handleClose}
+        handleOpen={handleOpen}
+      />
       <div className={styles.options}>
         <p
           onClick={() => {
+            handleImageSelect(files[0]);
             setOption("original");
           }}
         >
@@ -166,6 +229,7 @@ const BackgroundRemover = () => {
         </p>
         <p
           onClick={() => {
+            handleImageSelect(removedBgFiles[0]);
             setOption("removed");
           }}
         >
@@ -186,15 +250,21 @@ const BackgroundRemover = () => {
             {files.length > 0 && (
               <div className={styles.content}>
                 <aside style={thumbsContainer}>{thumbs}</aside>
-                {selectedFile && (
-                  <img
-                    src={selectedFile}
-                    alt="selectedImage"
-                    className={styles.selectedImg}
-                  />
-                )}
+                <img
+                  src={selectedFile.preview}
+                  alt="selectedImage"
+                  className={styles.selectedImg}
+                />
                 <div style={{ marginTop: "auto", marginBottom: "auto" }}>
-                  <Button variant="outlined">Remove Background</Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => {
+                      removeBackground();
+                    }}
+                  >
+                    Remove Background
+                  </Button>
                 </div>
               </div>
             )}
@@ -202,23 +272,25 @@ const BackgroundRemover = () => {
         </div>
       ) : (
         <>
-          {removedBgFiles.length > 0 && (
-            <div className={styles.content}>
-              <aside style={thumbsContainer}>{thumbs}</aside>
-              {selectedFile && (
-                <img
-                  src={selectedFile}
-                  alt="selectedImage"
-                  className={styles.selectedImg}
-                />
+          <div className={styles.dropZoneCard}>
+            <section className={styles.container}>
+              {removedBgFiles.length > 0 && (
+                <div className={styles.content}>
+                  <aside style={thumbsContainer}>{thumbs}</aside>
+                  <img
+                    src={selectedFile.preview}
+                    alt="selectedImage"
+                    className={styles.selectedImg}
+                  />
+                  <div style={{ marginTop: "auto", marginBottom: "auto" }}>
+                    <Button variant="outlined" onClick={() => {}}>
+                      Download Image
+                    </Button>
+                  </div>
+                </div>
               )}
-              <div style={{ marginTop: "auto", marginBottom: "auto" }}>
-                <Button variant="outlined" onClick={removeBackground}>
-                  Remove Background
-                </Button>
-              </div>
-            </div>
-          )}
+            </section>
+          </div>
         </>
       )}
     </>
