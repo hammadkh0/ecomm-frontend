@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import { Person } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
@@ -49,8 +49,10 @@ const AddUser = ({ userType, edit = false }) => {
             const user = data.data.user;
             setValue("name", user.name);
             setValue("email", user.email);
-            setValue("password", user.password);
-            setValue("confirmPassword", user.password);
+            if (!edit) {
+              setValue("password", user.password);
+              setValue("confirmPassword", user.password);
+            }
             setValue("role", user.role);
           } else {
             toastError(data.message);
@@ -60,9 +62,13 @@ const AddUser = ({ userType, edit = false }) => {
 
     return () => {
       setAction("Add");
-      reset();
+      setValue("name", "");
+      setValue("email", "");
+      setValue("password", "");
+      setValue("confirmPassword", "");
+      setValue("role", "");
     };
-  }, [edit, id, setValue, reset, auth.token]);
+  }, [edit, id, setValue, auth.token]);
 
   const onSubmit = (formData) => {
     const url = !edit ? "ecomm/users/createUser" : `ecomm/users/${id}`;
@@ -107,7 +113,7 @@ const AddUser = ({ userType, edit = false }) => {
           </h1>
 
           <form onSubmit={handleSubmit(onSubmit)}>
-            <Grid container spacing={3} sx={{ mt: 5, px: 2 }}>
+            <Grid container spacing={3} sx={{ px: 2 }}>
               <UserForm
                 control={control}
                 getValues={getValues}
@@ -117,12 +123,25 @@ const AddUser = ({ userType, edit = false }) => {
                 userType={userType}
               />
               <Grid item xs={12} textAlign={"center"} sx={{ mt: 2, p: 2 }}>
-                <button type="submit" className={styles.formButton}>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    color: "black.main",
+                    borderColor: "black.main",
+                    "&:hover": {
+                      color: "black.main",
+                      borderColor: "black.main",
+                      backgroundColor: "black.light",
+                    },
+                  }}
+                  type="submit"
+                  className={styles.formButton}
+                >
                   <PeopleAltIcon sx={{ mr: 1 }} fontSize="small" />
                   <span className={styles.formSpan}>
                     {action} {userType}
                   </span>
-                </button>
+                </Button>
               </Grid>
             </Grid>
           </form>

@@ -16,8 +16,8 @@
     font-weight: 400;
     text-align: center;
     text-transform: uppercase;
-    margin-bottom: 20px;
-    padding: 20px;
+    /* margin-bottom: 20px; */
+    /* padding: 20px; */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -25,15 +25,9 @@
 }
 
 .formButton {
-    position:relative;
-    padding: 10px 20px;
-    font-size: large;
-    color: white;
-    margin: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    width: 180px;
+    font-size: 14px !important;
+    margin: auto !important;
+    cursor: pointer !important;
+    width: 180px !important;
     height: 45px;
 }

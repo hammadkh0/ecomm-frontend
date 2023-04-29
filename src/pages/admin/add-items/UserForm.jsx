@@ -52,6 +52,7 @@ const UserForm = ({ control, getValues, errors, edit, userType }) => {
             mb: 1.5,
             color: "text.primary",
             "& span": { color: "error.light" },
+            fontSize: "label.fontSize",
           }}
         >
           {action} Your Name
@@ -80,6 +81,7 @@ const UserForm = ({ control, getValues, errors, edit, userType }) => {
             mb: 1.5,
             color: "text.primary",
             "& span": { color: "error.light" },
+            fontSize: "label.fontSize",
           }}
         >
           {action} Email
@@ -104,101 +106,108 @@ const UserForm = ({ control, getValues, errors, edit, userType }) => {
           }}
         />
       </Grid>
+      {!edit && (
+        <>
+          {/* ------------------- PASSWORD ------------------------- */}
+          <Grid item xs={12} sm={6}>
+            <InputLabel
+              htmlFor="password"
+              variant="standard"
+              required={action === "Edit" ? false : true}
+              sx={{
+                mb: 1.5,
+                color: "text.primary",
+                "& span": { color: "error.light" },
+                fontSize: "label.fontSize",
+              }}
+            >
+              {action} Password
+            </InputLabel>
 
-      {/* ------------------- PASSWORD ------------------------- */}
-      <Grid item xs={12} sm={6}>
-        <InputLabel
-          htmlFor="password"
-          variant="standard"
-          required={action === "Edit" ? false : true}
-          sx={{
-            mb: 1.5,
-            color: "text.primary",
-            "& span": { color: "error.light" },
-          }}
-        >
-          {action} Password
-        </InputLabel>
+            <TextInput
+              control={control}
+              required={action === "Edit" ? false : true}
+              minLength={8}
+              id="password"
+              name="password"
+              type={showPassword}
+              fullWidth
+              autoComplete="password"
+              placeholder="••••••••••"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={passwordDisplay}
+                      aria-label="toggle password visibility"
+                      edge="end"
+                    >
+                      {showPassword === "password" ? (
+                        <VisibilityOff />
+                      ) : (
+                        <Visibility />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              error={errors.password ? true : false}
+              helperText={
+                errors.password && "Password must be at least 8 characters long"
+              }
+            />
+          </Grid>
+          {/* ------------------- CONFIRM PASSWORD ------------------------- */}
+          <Grid item xs={12} sm={6}>
+            <InputLabel
+              htmlFor="confirmPassword"
+              variant="standard"
+              required={action === "Edit" ? false : true}
+              sx={{
+                mb: 1.5,
+                color: "text.primary",
+                "& span": { color: "error.light" },
+                fontSize: "label.fontSize",
+              }}
+            >
+              Confirm Password
+            </InputLabel>
 
-        <TextInput
-          control={control}
-          required={action === "Edit" ? false : true}
-          minLength={8}
-          id="password"
-          name="password"
-          type={showPassword}
-          fullWidth
-          autoComplete="password"
-          placeholder="••••••••••"
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={passwordDisplay}
-                  aria-label="toggle password visibility"
-                  edge="end"
-                >
-                  {showPassword === "password" ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          error={errors.password ? true : false}
-          helperText={
-            errors.password && "Password must be at least 8 characters long"
-          }
-        />
-      </Grid>
-
-      {/* ------------------- CONFIRM PASSWORD ------------------------- */}
-      <Grid item xs={12} sm={6}>
-        <InputLabel
-          htmlFor="confirmPassword"
-          variant="standard"
-          required={action === "Edit" ? false : true}
-          sx={{
-            mb: 1.5,
-            color: "text.primary",
-            "& span": { color: "error.light" },
-          }}
-        >
-          Confirm Password
-        </InputLabel>
-
-        <TextInput
-          control={control}
-          required={action === "Edit" ? false : true}
-          validate={(value) => value === getValues("password")}
-          id="confirmPassword"
-          name="confirmPassword"
-          fullWidth
-          autoComplete="confirmPassword"
-          type={showConfirmPassword}
-          placeholder="••••••••••"
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={confirmPasswordDisplay}
-                  aria-label="toggle password visibility"
-                  edge="end"
-                >
-                  {showConfirmPassword === "password" ? (
-                    <VisibilityOff />
-                  ) : (
-                    <Visibility />
-                  )}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          error={errors.confirmPassword ? true : false}
-          helperText={
-            errors.confirmPassword && "Password and confirm password must match"
-          }
-        />
-      </Grid>
-
+            <TextInput
+              control={control}
+              required={action === "Edit" ? false : true}
+              validate={(value) => value === getValues("password")}
+              id="confirmPassword"
+              name="confirmPassword"
+              fullWidth
+              autoComplete="confirmPassword"
+              type={showConfirmPassword}
+              placeholder="••••••••••"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={confirmPasswordDisplay}
+                      aria-label="toggle password visibility"
+                      edge="end"
+                    >
+                      {showConfirmPassword === "password" ? (
+                        <VisibilityOff />
+                      ) : (
+                        <Visibility />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              error={errors.confirmPassword ? true : false}
+              helperText={
+                errors.confirmPassword && "Password and confirm password must match"
+              }
+            />
+          </Grid>
+        </>
+      )}
       {/* ------------------------------ USER ROLE ---------------------*/}
       {edit && (
         <Grid item xs={12}>
@@ -210,6 +219,7 @@ const UserForm = ({ control, getValues, errors, edit, userType }) => {
               mb: 1.5,
               color: "text.primary",
               "& span": { color: "error.light" },
+              fontSize: "label.fontSize",
             }}
           >
             User Role
@@ -222,12 +232,14 @@ const UserForm = ({ control, getValues, errors, edit, userType }) => {
             autoComplete="userType"
             defaultValue={role}
             fullWidth
+            sx={{ color: "text.secondary" }}
           >
             <MenuItem
               value={"user"}
               onClick={() => {
                 setRole("user");
               }}
+              sx={{ color: "text.secondary" }}
             >
               User
             </MenuItem>
@@ -238,6 +250,7 @@ const UserForm = ({ control, getValues, errors, edit, userType }) => {
               onClick={() => {
                 setRole("admin");
               }}
+              sx={{ color: "text.secondary" }}
             >
               Admin
             </MenuItem>

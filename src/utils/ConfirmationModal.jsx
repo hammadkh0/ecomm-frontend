@@ -53,13 +53,18 @@ const ConfirmationModal = ({
                 display: "flex",
                 justifyContent: "center",
                 mt: 4,
-                gap: 1,
+                gap: 4,
               }}
             >
               <Button
                 variant="contained"
                 color="primary"
-                sx={{ color: "white" }}
+                sx={{
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "info.main",
+                  },
+                }}
                 onClick={() => {
                   handleClose();
                 }}

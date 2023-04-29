@@ -36,7 +36,7 @@ const ViewUsers = (props) => {
       width: 200,
       renderCell: (params) => (
         <div>
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body2" color="text.secondary">
             {params.row.name}
           </Typography>
         </div>
@@ -48,7 +48,7 @@ const ViewUsers = (props) => {
       width: 200,
       renderCell: (params) => (
         <div>
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body2" color="text.secondary">
             {params.row.email}
           </Typography>
         </div>
@@ -60,7 +60,7 @@ const ViewUsers = (props) => {
       width: 100,
       renderCell: (params) => (
         <div>
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body2" color="text.secondary">
             {params.row.active ? "Active" : "Blocked"}
           </Typography>
         </div>
@@ -72,7 +72,7 @@ const ViewUsers = (props) => {
       width: 200,
       renderCell: (params) => (
         <div>
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body2" color="text.secondary">
             {params.row.createdAt}
           </Typography>
         </div>
