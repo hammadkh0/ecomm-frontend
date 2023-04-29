@@ -19,7 +19,22 @@ const TextInput = ({
       control={control}
       rules={{ required, pattern, minLength, maxLength, validate }}
       defaultValue={defaultValue}
-      render={({ field }) => <TextField {...rest} {...field} inputRef={field.ref} />}
+      render={({ field }) => (
+        <TextField
+          variant="outlined"
+          sx={{
+            // override padding for MuiOutlinedInput
+            "& .MuiOutlinedInput-root input": {
+              padding: "12px",
+              color: "text.secondary",
+              fontWeight: 100,
+            },
+          }}
+          {...rest}
+          {...field}
+          inputRef={field.ref}
+        />
+      )}
     />
   );
 };

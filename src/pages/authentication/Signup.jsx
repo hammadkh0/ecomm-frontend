@@ -1,32 +1,63 @@
 /* eslint-disable no-undef */
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SignupStyle from "./signupstyle.module.css";
 import Img3 from "../../Images/Signup_image.png";
 import EcomBuddyLogo from "../../Images/Logo.png";
 
 import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
 import { Link, useNavigate } from "react-router-dom";
-import { FacebookTwoTone, Google } from "@mui/icons-material";
+import {
+  AlternateEmail,
+  FacebookTwoTone,
+  Google,
+  Visibility,
+  VisibilityOff,
+} from "@mui/icons-material";
 import { useHttpClient } from "../../hooks/http-hook";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { toastError, toastSuccess } from "../../utils/toast-message";
 import jwtDecode from "jwt-decode";
 import { AuthContext } from "../../context/auth-context";
 import { ToastContainer } from "react-toastify";
+import { useForm } from "react-hook-form";
+import { IconButton, InputAdornment, InputLabel } from "@mui/material";
+import TextInput from "../../Component/Inputs/TextInput";
 
 export default function Signup() {
+  const {
+    handleSubmit,
+    control,
+    getValues,
+    formState: { errors },
+  } = useForm({
+    mode: "onChange",
+  });
+  const [showPassword, setShowPassword] = useState("password");
+  const [showConfirmPassword, setShowConfirmPassword] = useState("password");
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
-
-  const [inputs, setInputs] = useState({});
   const { sendRequest } = useHttpClient();
 
-  function handleForm(e) {
-    const name = e.target.name;
-    const value = e.target.value;
-    setInputs((values) => ({ ...values, [name]: value }));
-  }
+  // --------------------------- INPUT FUNTIONS ---------------------------
+  useEffect(() => {
+    // cleanup function
+    return () => {
+      setShowPassword("password");
+      setShowConfirmPassword("password");
+    };
+  }, []);
 
+  const passwordDisplay = () => {
+    showPassword === "text" ? setShowPassword("password") : setShowPassword("text");
+  };
+
+  const confirmPasswordDisplay = () => {
+    showConfirmPassword === "text"
+      ? setShowConfirmPassword("password")
+      : setShowConfirmPassword("text");
+  };
+
+  // --------------------------- AUTH FUNCTIONS ---------------------------
   const responseFacebook = (response) => {
     console.log(response);
   };
@@ -105,79 +136,191 @@ export default function Signup() {
           <h2 className={SignupStyle.loginheading}>Sign Up to EcomBuddy</h2>
 
           <div className={SignupStyle.main_form}>
-            <form onSubmit={authSubmitHandler}>
-              <></>
-
+            <form onSubmit={handleSubmit(authSubmitHandler)}>
               <div className={SignupStyle.logintextfield}>
-                <div className={SignupStyle.entername}>
-                  <p className={SignupStyle.text}>Name</p>
-                  <label htmlFor="Name" />
-                  <input
-                    className={SignupStyle.input}
-                    type="text"
-                    id="Name"
+                {/* ---------------- USER NAME ----------------- */}
+                <div
+                  className={[SignupStyle.entername, SignupStyle.formInput].join(
+                    " "
+                  )}
+                >
+                  <InputLabel
+                    htmlFor="name"
+                    variant="standard"
+                    required
+                    sx={{
+                      mb: 1.5,
+                      color: "text.primary",
+                      "& span": { color: "error.light" },
+                      fontSize: "label.fontSize",
+                    }}
+                  >
+                    Enter Your Name
+                  </InputLabel>
+                  <TextInput
+                    control={control}
+                    required
+                    maxLength={30}
                     name="name"
-                    placeholder="First and last name"
-                    required
-                    onChange={(e) => {
-                      handleForm(e);
-                    }}
-                    value={inputs.name}
+                    placeholder="John Doe"
+                    id="name"
+                    fullWidth
+                    autoComplete="family-name"
+                    error={errors.name ? true : false}
+                    helperText={errors.name && "Name is required"}
                   />
                 </div>
 
-                <div className={SignupStyle.loginemail}>
-                  <p className={SignupStyle.text}>Email</p>
-
-                  <input
-                    className={SignupStyle.input}
-                    type="email"
+                {/* ------------------- EMAIL ------------------  */}
+                <div
+                  className={[SignupStyle.loginemail, SignupStyle.formInput].join(
+                    " "
+                  )}
+                >
+                  <InputLabel
+                    htmlFor="email"
+                    variant="standard"
+                    sx={{
+                      mb: 1.5,
+                      color: "text.primary",
+                      "& span": { color: "error.light" },
+                      fontSize: "label.fontSize",
+                    }}
+                  >
+                    Enter your Email
+                  </InputLabel>
+                  <TextInput
+                    control={control}
+                    required={true}
+                    pattern={/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/}
                     name="email"
-                    placeholder="This will be your email"
-                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-                    required
-                    onChange={(e) => {
-                      handleForm(e);
+                    id="email"
+                    placeholder="johndoe@gmail.com"
+                    fullWidth
+                    autoComplete="email"
+                    error={errors.email ? true : false}
+                    helperText={errors.email && "Invalid email address"}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <AlternateEmail />
+                        </InputAdornment>
+                      ),
                     }}
-                    value={inputs.email}
                   />
                 </div>
 
-                <div className={SignupStyle.loginpassword}>
-                  <p className={SignupStyle.text}>Password</p>
-                  <input
-                    className={SignupStyle.input}
-                    type="password"
+                {/* ------------------- PASSWORD ------------------  */}
+                <div
+                  className={[SignupStyle.loginpassword, SignupStyle.formInput].join(
+                    " "
+                  )}
+                >
+                  <InputLabel
+                    htmlFor="password"
+                    variant="standard"
+                    required
+                    sx={{
+                      mb: 1.5,
+                      color: "text.primary",
+                      "& span": { color: "error.light" },
+                      fontSize: "label.fontSize",
+                    }}
+                  >
+                    Enter your Password
+                  </InputLabel>
+
+                  <TextInput
+                    control={control}
+                    required
+                    minLength={8}
+                    id="password"
                     name="password"
-                    placeholder="Choose a strong password"
-                    required
-                    onChange={(e) => {
-                      handleForm(e);
+                    type={showPassword}
+                    fullWidth
+                    autoComplete="password"
+                    placeholder="••••••••••"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={passwordDisplay}
+                            aria-label="toggle password visibility"
+                            edge="end"
+                          >
+                            {showPassword === "password" ? (
+                              <VisibilityOff />
+                            ) : (
+                              <Visibility />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
                     }}
-                    value={inputs.password}
+                    error={errors.password ? true : false}
+                    helperText={
+                      errors.password &&
+                      "Password must be at least 8 characters long"
+                    }
                   />
                 </div>
 
-                <div className={SignupStyle.loginpassword}>
-                  <p className={SignupStyle.text}>Password Confirmation</p>
-                  <input
-                    className={SignupStyle.input}
-                    type="password"
-                    name="passwordConfirm"
-                    placeholder="Enter the password again"
+                {/* ------------------- CONFIRM PASSWORD ------------------  */}
+                <div
+                  className={[SignupStyle.loginpassword, SignupStyle.formInput].join(
+                    " "
+                  )}
+                >
+                  <InputLabel
+                    htmlFor="confirmPassword"
+                    variant="standard"
                     required
-                    onChange={(e) => {
-                      handleForm(e);
+                    sx={{
+                      mb: 1.5,
+                      color: "text.primary",
+                      "& span": { color: "error.light" },
+                      fontSize: "label.fontSize",
                     }}
-                    value={inputs.passwordConfirm}
+                  >
+                    Enter Confirmation Password
+                  </InputLabel>
+
+                  <TextInput
+                    control={control}
+                    required
+                    validate={(value) => value === getValues("password")}
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    fullWidth
+                    autoComplete="confirmPassword"
+                    type={showConfirmPassword}
+                    placeholder="••••••••••"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={confirmPasswordDisplay}
+                            aria-label="toggle password visibility"
+                            edge="end"
+                          >
+                            {showConfirmPassword === "password" ? (
+                              <VisibilityOff />
+                            ) : (
+                              <Visibility />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                    error={errors.confirmPassword ? true : false}
+                    helperText={
+                      errors.confirmPassword &&
+                      "Password and confirm password must match"
+                    }
                   />
                 </div>
-                {/* <ul className={SignupStyle.list}>
-                <li>At least 8 characters</li>
-                <li>A mixture of letters,numbers and special characters</li>
-              </ul> */}
               </div>
-
+              {/* ------------------ SUBMIT BTN ---------------- */}
               <button
                 id="button"
                 type="submit"
@@ -198,14 +341,16 @@ export default function Signup() {
             <hr />
             <div className={`${SignupStyle.tp_div}`}>
               <p>Sign Up with:</p>
-              <div style={{ display: "flex", justifyContent: "space-around" }}>
+              <div style={{ display: "flex", justifyContent: "space-evenly" }}>
                 {/* <div className={SignupStyle.tp_icon} onClick={renderProps.onClick}>
                     <div>
                       <Google />
                     </div>
                   </div> */}
 
-                <GoogleOAuthProvider clientId="1010179090786-iquiuhpl5fbg0gicdu89je8ura4fvqgg.apps.googleusercontent.com">
+                <GoogleOAuthProvider
+                  clientId={`${import.meta.env.VITE_GOOGLE_CLIENT_ID}`}
+                >
                   <GoogleLogin
                     onSuccess={(data) => {
                       googleLoginSuccess(data);
@@ -217,7 +362,7 @@ export default function Signup() {
                 </GoogleOAuthProvider>
 
                 {/* <FacebookLogin
-                  appId="380989097569545"
+                  appId={`${import.meta.env.VITE_FACEBOOK_CLIENT_ID}`
                   autoLoad={false}
                   callback={responseFacebook}
                   render={(renderProps) => (

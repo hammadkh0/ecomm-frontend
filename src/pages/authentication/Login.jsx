@@ -1,36 +1,62 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AlternateEmail, Visibility, VisibilityOff } from "@mui/icons-material";
+import { useForm } from "react-hook-form";
+import { IconButton, InputAdornment, InputLabel } from "@mui/material";
+
+import { AuthContext } from "../../context/auth-context";
+import { ToastContainer } from "react-toastify";
+import { toastError, toastSuccess } from "../../utils/toast-message";
+import TextInput from "../../Component/Inputs/TextInput";
+import { useHttpClient } from "../../hooks/http-hook";
+
 import Logo1 from "../../Images/Logo.png";
 import LoginStyle from "./login.module.css";
-import { Link, useNavigate } from "react-router-dom";
-import { useHttpClient } from "../../hooks/http-hook";
-import SignupStyle from "./signupstyle.module.css";
 import Img3 from "../../Images/Signup_image.png";
-import { AuthContext } from "../../context/auth-context";
-import { toast, ToastContainer } from "react-toastify";
-import { toastError, toastSuccess } from "../../utils/toast-message";
+
+import SignupStyle from "./signupstyle.module.css";
 
 function Login() {
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    mode: "onChange",
+  });
+
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState("password");
+  const { sendRequest } = useHttpClient();
 
-  const [inputs, setInputs] = useState({});
-  const { sendRequest, error } = useHttpClient();
+  useEffect(() => {
+    // cleanup function
+    return () => {
+      setShowPassword("password");
+    };
+  }, []);
 
-  function handleForm(e) {
-    const name = e.target.name;
-    const value = e.target.value;
-    setInputs((values) => ({ ...values, [name]: value }));
-  }
-
-  const authSubmitHandler = async (event) => {
-    event.preventDefault();
+  const passwordDisplay = () => {
+    showPassword === "text" ? setShowPassword("password") : setShowPassword("text");
+  };
+  const PasswordError = () => (
+    <p>
+      Password must contain at least <br /> One lowercase letter <br />
+      One uppercase letter <br />
+      One digit <br />
+      One special character <br />
+      Length of the password is at least 8 characters.
+    </p>
+  );
+  const authSubmitHandler = async (formData) => {
     try {
       const responseData = await sendRequest(
         `${import.meta.env.VITE_BACKEND_URL}/ecomm/users/login`,
         "POST",
         JSON.stringify({
-          email: inputs.email,
-          password: inputs.password,
+          email: formData.email,
+          password: formData.password,
         }),
         {
           "Content-Type": "application/json",
@@ -60,42 +86,95 @@ function Login() {
             <div className={LoginStyle.top_image}>
               <img src={Logo1} alt="" />
             </div>
-            <h2 className={LoginStyle.loginheading}>Log In to EcomBuddy</h2>
+            <h2 className={LoginStyle.loginheading}>Login to EcomBuddy</h2>
 
             <div className={LoginStyle.main_form}>
-              <form onSubmit={authSubmitHandler}>
+              <form onSubmit={handleSubmit(authSubmitHandler)}>
                 <ToastContainer />
 
+                {/* ----------------- EMAIL ------------------ */}
                 <div className={LoginStyle.logintextfield}>
                   <div className={LoginStyle.loginemail}>
-                    <p className={LoginStyle.text}>Email</p>
-
-                    <input
-                      className={LoginStyle.input}
-                      type="email"
-                      placeholder="This will be your email"
-                      pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-                      required
-                      name="email"
-                      onChange={(e) => {
-                        handleForm(e);
+                    <InputLabel
+                      htmlFor="email"
+                      variant="standard"
+                      sx={{
+                        mb: 1.5,
+                        color: "text.primary",
+                        "& span": { color: "error.light" },
+                        fontSize: "label.fontSize",
                       }}
-                      value={inputs.email}
+                    >
+                      Enter your Email
+                    </InputLabel>
+                    <TextInput
+                      control={control}
+                      required={true}
+                      pattern={/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/}
+                      name="email"
+                      id="email"
+                      placeholder="johndoe@gmail.com"
+                      fullWidth
+                      autoComplete="email"
+                      error={errors.email ? true : false}
+                      helperText={errors.email && "Invalid email address"}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <AlternateEmail />
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   </div>
 
+                  {/* -------------------- PASSWORD ------------------- */}
                   <div className={LoginStyle.loginpassword}>
-                    <p className={LoginStyle.text}>Password</p>
-                    <input
-                      className={LoginStyle.input}
-                      type="password"
-                      placeholder="Choose a strong password"
-                      required
-                      name="password"
-                      onChange={(e) => {
-                        handleForm(e);
+                    <InputLabel
+                      htmlFor="password"
+                      variant="standard"
+                      sx={{
+                        mb: 1.5,
+                        color: "text.primary",
+                        "& span": { color: "error.light" },
+                        fontSize: "label.fontSize",
                       }}
-                      value={inputs.password}
+                    >
+                      Enter your Password
+                    </InputLabel>
+
+                    <TextInput
+                      control={control}
+                      minLength={8}
+                      required={true}
+                      pattern={
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&^+-_])[a-zA-Z\d@$!%*#?&^+-_]{8,}$/
+                      }
+                      id="password"
+                      name="password"
+                      type={showPassword}
+                      fullWidth
+                      autoComplete="password"
+                      placeholder="••••••••••"
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={passwordDisplay}
+                              aria-label="toggle password visibility"
+                              edge="end"
+                            >
+                              {showPassword === "password" ? (
+                                <VisibilityOff />
+                              ) : (
+                                <Visibility />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                      error={errors.password ? true : false}
+                      helperText={errors.password && <PasswordError />}
                     />
                   </div>
 

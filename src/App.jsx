@@ -4,12 +4,13 @@ import { AuthContext } from "./context/auth-context";
 import { useAuth } from "./hooks/auth-hook";
 
 import "react-toastify/dist/ReactToastify.css";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, ThemeProvider } from "@mui/material";
 import Logout from "./Component/Logout";
 import BackgroundRemover from "./pages/dashboard/listings/BackgroundRemover";
+import { theme } from "./themes/theme";
 
 // User Routes
-const Login = lazy(() => import("./pages/authentication/Login"));
+import Login from "./pages/authentication/Login";
 const Signup = lazy(() => import("./pages/authentication/Signup"));
 const ForgetPassword = lazy(() => import("./pages/authentication/ForgetPassword"));
 const Homepage = lazy(() => import("./pages/landing/Homepage"));
@@ -51,8 +52,24 @@ const App = () => {
     routes = (
       <Routes>
         <Route exact path="/" element={<Homepage />} />
-        <Route exact path="/login" element={<Login />} />
-        <Route exact path="/signup" element={<Signup />} />
+        <Route
+          exact
+          path="/login"
+          element={
+            <ThemeProvider theme={theme}>
+              <Login />
+            </ThemeProvider>
+          }
+        />
+        <Route
+          exact
+          path="/signup"
+          element={
+            <ThemeProvider theme={theme}>
+              <Signup />
+            </ThemeProvider>
+          }
+        />
         <Route exact path="/recover-password" element={<ForgetPassword />} />
         <Route exact path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="*" element={<Page404 />} />
