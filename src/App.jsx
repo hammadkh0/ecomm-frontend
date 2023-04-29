@@ -98,7 +98,15 @@ const App = () => {
           />
           <Route exact path="/product-listing" element={<ProductListing />} />
           <Route exact path="/trends" element={<Trends />} />
-          <Route exact path="/profile" element={<Profile />} />
+          <Route
+            exact
+            path="/profile"
+            element={
+              <ThemeProvider theme={theme}>
+                <Profile />
+              </ThemeProvider>
+            }
+          />
           <Route exact path="/remove-bg" element={<BackgroundRemover />} />
           <Route exact path="/logout" element={<Logout />} />
         </Route>

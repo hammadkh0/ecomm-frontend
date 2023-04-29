@@ -147,9 +147,9 @@ function Login() {
                       control={control}
                       minLength={8}
                       required={true}
-                      pattern={
-                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&^+-_])[a-zA-Z\d@$!%*#?&^+-_]{8,}$/
-                      }
+                      // pattern={
+                      //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&^+-_])[a-zA-Z\d@$!%*#?&^+-_]{8,}$/
+                      // }
                       id="password"
                       name="password"
                       type={showPassword}

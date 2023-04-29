@@ -94,18 +94,17 @@ export default function Signup() {
     }, 1500);
   };
 
-  const authSubmitHandler = async (event) => {
-    event.preventDefault();
+  const authSubmitHandler = async (formData) => {
     try {
       console.log(inputs);
       const responseData = await sendRequest(
         `${import.meta.env.VITE_BACKEND_URL}/ecomm/users/signup`,
         "POST",
         JSON.stringify({
-          name: inputs.name,
-          email: inputs.email,
-          password: inputs.password,
-          passwordConfirm: inputs.passwordConfirm,
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          passwordConfirm: formData.passwordConfirm,
         }),
         {
           "Content-Type": "application/json",
@@ -289,10 +288,10 @@ export default function Signup() {
                     control={control}
                     required
                     validate={(value) => value === getValues("password")}
-                    id="confirmPassword"
-                    name="confirmPassword"
+                    id="passwordConfirm"
+                    name="passwordConfirm"
                     fullWidth
-                    autoComplete="confirmPassword"
+                    autoComplete="passwordConfirm"
                     type={showConfirmPassword}
                     placeholder="••••••••••"
                     InputProps={{

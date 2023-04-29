@@ -1,23 +1,66 @@
 import React, { useContext, useEffect, useState } from "react";
 import style from "./profile.module.css";
 import { AuthContext } from "../../../context/auth-context";
-import { Avatar, Backdrop, Button, CircularProgress } from "@mui/material";
+import {
+  Avatar,
+  Backdrop,
+  Button,
+  CircularProgress,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+} from "@mui/material";
 import { toast, ToastContainer } from "react-toastify";
 
 import { useAuth } from "../../../hooks/auth-hook";
+import { useForm } from "react-hook-form";
+import TextInput from "../../../Component/Inputs/TextInput";
+import { AlternateEmail, Visibility, VisibilityOff } from "@mui/icons-material";
+
 import ImageUpload from "../../../utils/image-upload";
 
 function Main_profile() {
+  const {
+    handleSubmit: handleUserSubmit,
+    control: userControl,
+    setValue: setUserValue,
+    formState: { errors: userErrors },
+    watch: userWatch,
+  } = useForm({
+    mode: "onChange",
+  });
+  const {
+    handleSubmit: handlePasswordSubmit,
+    control: passwordControl,
+    getValues: getPasswordValues,
+    setValue: setPasswordValue,
+    formState: { errors: passwordErrors },
+    watch: passwordWatch,
+  } = useForm({
+    mode: "onChange",
+  });
   const auth = useContext(AuthContext);
   const { updateContext } = useAuth();
+  const [showOldPassword, setShowOldPassword] = useState("password");
+  const [showPassword, setShowPassword] = useState("password");
+  const [showConfirmPassword, setShowConfirmPassword] = useState("password");
   const [user, setUser] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [image, setImage] = useState("");
+
+  const oldPasswordDisplay = () => {
+    showOldPassword === "text"
+      ? setShowOldPassword("password")
+      : setShowOldPassword("text");
+  };
+  const passwordDisplay = () => {
+    showPassword === "text" ? setShowPassword("password") : setShowPassword("text");
+  };
+  const confirmPasswordDisplay = () => {
+    showConfirmPassword === "text"
+      ? setShowConfirmPassword("password")
+      : setShowConfirmPassword("text");
+  };
 
   const getImage = (img) => {
     setImage(img);
@@ -29,7 +72,6 @@ function Main_profile() {
     userImageHolder,
     userTextInfoHolder,
     profileFields,
-    profileField,
     imageBtn,
   } = style;
 
@@ -50,9 +92,9 @@ function Main_profile() {
         const userData = await res.json();
         const user = userData.data.user;
         setUser(user);
-        setName(user.name);
-        setEmail(user.email);
-        if (user.image) setImage(user.image);
+        setUserValue("name", user.name);
+        setUserValue("email", user.email);
+        if (user.image) setUserValue("image", user.image);
         setIsLoading(false);
       } catch (err) {
         toast.error("Something went wrong", {
@@ -66,12 +108,11 @@ function Main_profile() {
 
     setTimeout(() => {
       getUser();
-    }, 1000);
+    }, 500);
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleFormSubmit = async (formData) => {
+    console.log("updating", formData);
     try {
       // const formData = new FormData();
       // formData.append("name", name);
@@ -89,7 +130,7 @@ function Main_profile() {
             Authorization: `Bearer ${auth.token}`,
           },
           mode: "cors",
-          body: JSON.stringify({ name, email }),
+          body: JSON.stringify({ name: formData.name, email: formData.email }),
         }
       );
 
@@ -118,17 +159,7 @@ function Main_profile() {
     }
   };
 
-  const updatePassword = async (e) => {
-    e.preventDefault();
-
-    if (password !== passwordConfirm) {
-      return toast.error("Passwords don't match", {
-        position: "top-center",
-        autoClose: 1500,
-        closeOnClick: true,
-        pauseOnHover: false,
-      });
-    }
+  const updatePassword = async (formData) => {
     const res = await fetch(
       `${import.meta.env.VITE_BACKEND_URL}/ecomm/users/updatePassword`,
       {
@@ -140,14 +171,19 @@ function Main_profile() {
           Authorization: `Bearer ${auth.token}`,
         },
         mode: "cors",
-        body: JSON.stringify({ currentPassword, password, passwordConfirm }),
+        body: JSON.stringify({
+          currentPassword: formData.oldPassword,
+          password: formData.password,
+          passwordConfirm: formData.passwordConfirm,
+        }),
       }
     );
     const data = await res.json();
     if (data.status === "success") {
-      setCurrentPassword("");
-      setPassword("");
-      setPasswordConfirm("");
+      setPasswordValue("currentPassword", "");
+      setPasswordValue("password", "");
+      setPasswordValue("passwordConfirm", "");
+
       toast.success("Password reset successfully", {
         position: "top-center",
         autoClose: 500,
@@ -183,8 +219,7 @@ function Main_profile() {
 
       <div className={userCard}>
         <h3>Update profile information</h3>
-        {console.log(image)}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleUserSubmit(handleFormSubmit)}>
           {/* <ImageUpload getImage={getImage} /> */}
           <div className={`${userCard} ${imageCard}`}>
             <div className={userImageHolder}>
@@ -214,43 +249,77 @@ function Main_profile() {
             </div>
           </div>
 
+          {/* ------------------ UPDATE PROFILE INFORMATION ------------ */}
           <div className={profileFields}>
             <div>
-              <p>Name</p>
-              <input
-                className={profileField}
-                type="text"
-                name="name"
-                value={name}
-                placeholder={user.name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                }}
-              />
-            </div>
-            <div>
-              <p>Email</p>
-              <input
-                className={profileField}
-                type="text"
-                name="email"
-                value={email}
-                placeholder={user.email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-              />
-            </div>
-            <div>
-              <Button
+              <InputLabel
+                htmlFor="name"
+                variant="standard"
+                required
                 sx={{
-                  backgroundColor: "#1C8090",
-                  borderRadius: "8px",
-                  ":hover": { backgroundColor: "#1C8090" },
+                  mb: 1.5,
+                  color: "text.primary",
+                  "& span": { color: "error.light" },
+                  fontSize: "label.fontSize",
                 }}
-                variant="contained"
+              >
+                Enter Your Name
+              </InputLabel>
+              <TextInput
+                control={userControl}
+                required
+                maxLength={30}
+                name="name"
+                placeholder="John Doe"
+                id="name"
+                fullWidth
+                autoComplete="family-name"
+                error={userErrors.name ? true : false}
+                helperText={userErrors.name && "Name is required"}
+              />
+            </div>
+            <div>
+              <InputLabel
+                htmlFor="email"
+                variant="standard"
+                sx={{
+                  mb: 1.5,
+                  color: "text.primary",
+                  "& span": { color: "error.light" },
+                  fontSize: "label.fontSize",
+                }}
+              >
+                Enter your Email
+              </InputLabel>
+              <TextInput
+                control={userControl}
+                required={true}
+                pattern={/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/}
+                name="email"
+                id="email"
+                placeholder="johndoe@gmail.com"
+                fullWidth
+                autoComplete="email"
+                error={userErrors.email ? true : false}
+                helperText={userErrors.email && "Invalid email address"}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <AlternateEmail />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </div>
+            <div>
+              {/* watch is a subscriber from react-hook-form taht will subscribe to the inputs and watch for the changes */}
+              <Button
                 type="submit"
-                disabled={!name.length && !email.length}
+                variant="outlined"
+                sx={{
+                  height: 40,
+                }}
+                disabled={!userWatch("name") || !userWatch("email")}
               >
                 Update Profile
               </Button>
@@ -258,64 +327,176 @@ function Main_profile() {
           </div>
         </form>
       </div>
+
+      {/* ------------------- UPDATE PASSWORD --------------------- */}
       <div className={userCard}>
         <h3>Update Password</h3>
-        <form onSubmit={updatePassword}>
+        <form onSubmit={handlePasswordSubmit(updatePassword)}>
           <div className={profileFields}>
             <div>
-              <p>Current Password</p>
-              <input
-                className={profileField}
-                type="password"
-                name="currentPassword"
-                value={currentPassword}
-                placeholder="Enter your current Password"
-                onChange={(e) => {
-                  setCurrentPassword(e.target.value);
+              <InputLabel
+                htmlFor="oldPassword"
+                variant="standard"
+                required
+                sx={{
+                  mb: 1.5,
+                  color: "text.primary",
+                  "& span": { color: "error.light" },
+                  fontSize: "label.fontSize",
                 }}
+              >
+                Enter your Password
+              </InputLabel>
+
+              <TextInput
+                control={passwordControl}
+                required
+                minLength={8}
+                id="oldPassword"
+                name="oldPassword"
+                type={showOldPassword}
+                fullWidth
+                autoComplete="oldPassword"
+                placeholder="••••••••••"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={oldPasswordDisplay}
+                        aria-label="toggle password visibility"
+                        edge="end"
+                      >
+                        {showOldPassword === "password" ? (
+                          <VisibilityOff />
+                        ) : (
+                          <Visibility />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                error={passwordErrors.oldPassword ? true : false}
+                helperText={
+                  passwordErrors.oldPassword &&
+                  "Password must be at least 8 characters long"
+                }
               />
             </div>
 
             <div>
-              <p>New Password</p>
-              <input
-                className={profileField}
-                type="password"
+              <InputLabel
+                htmlFor="password"
+                variant="standard"
+                required
+                sx={{
+                  mb: 1.5,
+                  color: "text.primary",
+                  "& span": { color: "error.light" },
+                  fontSize: "label.fontSize",
+                }}
+              >
+                Enter your Password
+              </InputLabel>
+
+              <TextInput
+                control={passwordControl}
+                required
+                minLength={8}
+                id="password"
                 name="password"
-                value={password}
-                placeholder="Enter your new Password"
-                onChange={(e) => {
-                  setPassword(e.target.value);
+                type={showPassword}
+                fullWidth
+                autoComplete="password"
+                placeholder="••••••••••"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={passwordDisplay}
+                        aria-label="toggle password visibility"
+                        edge="end"
+                      >
+                        {showPassword === "password" ? (
+                          <VisibilityOff />
+                        ) : (
+                          <Visibility />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
                 }}
+                error={passwordErrors.password ? true : false}
+                helperText={
+                  passwordErrors.password &&
+                  "Password must be at least 8 characters long"
+                }
               />
             </div>
 
             <div>
-              <p>New Password Confirm</p>
-              <input
-                className={profileField}
-                type="password"
-                name="passwordConfirm"
-                value={passwordConfirm}
-                placeholder="Enter the new password again"
-                onChange={(e) => {
-                  setPasswordConfirm(e.target.value);
+              <InputLabel
+                htmlFor="passwordConfirm"
+                variant="standard"
+                required
+                sx={{
+                  mb: 1.5,
+                  color: "text.primary",
+                  "& span": { color: "error.light" },
+                  fontSize: "label.fontSize",
                 }}
+              >
+                Enter Confirmation Password
+              </InputLabel>
+
+              <TextInput
+                control={passwordControl}
+                required
+                validate={(value) => value === getPasswordValues("password")}
+                id="passwordConfirm"
+                name="passwordConfirm"
+                fullWidth
+                autoComplete="passwordConfirm"
+                type={showConfirmPassword}
+                placeholder="••••••••••"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={confirmPasswordDisplay}
+                        aria-label="toggle password visibility"
+                        edge="end"
+                      >
+                        {showConfirmPassword === "password" ? (
+                          <VisibilityOff />
+                        ) : (
+                          <Visibility />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                error={passwordErrors.passwordConfirm ? true : false}
+                helperText={
+                  passwordErrors.passwordConfirm &&
+                  "Password and confirm password must match"
+                }
               />
             </div>
 
             <div>
               <Button
-                sx={{
-                  backgroundColor: "#1C8090",
-                  borderRadius: "8px",
-                  ":hover": { backgroundColor: "#1C8090" },
-                }}
-                variant="contained"
                 type="submit"
-                disabled={!password.length && !passwordConfirm.length}
+                variant="outlined"
+                sx={{
+                  height: 40,
+                }}
+                disabled={
+                  !passwordWatch("oldPassword") ||
+                  !passwordWatch("password") ||
+                  !passwordWatch("passwordConfirm")
+                }
               >
-                Update Password
+                UPDATE
               </Button>
             </div>
           </div>
