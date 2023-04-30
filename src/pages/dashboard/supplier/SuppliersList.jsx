@@ -116,10 +116,14 @@ function SuppliersList() {
 
   return (
     <div className={wrapper}>
-      <h2 className={mainSubHeading}>Find suppliers on Alibaba</h2>
+      <h2 style={{ margin: 0, padding: 0 }} className={mainSubHeading}>
+        Find suppliers on Alibaba
+      </h2>
       <div className={card}>
         <div className={cardHeader}>
-          <p>Enter the keywords to find the suppliers for the products</p>
+          <h3 style={{ margin: 0 }}>
+            Enter the keywords to find the suppliers for the products
+          </h3>
         </div>
         <form className={cardForm} onSubmit={(e) => {}}>
           <TextField

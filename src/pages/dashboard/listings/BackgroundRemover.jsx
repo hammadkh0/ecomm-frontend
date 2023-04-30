@@ -148,6 +148,7 @@ const BackgroundRemover = () => {
     </div>
   ));
 
+  // --------------------- useEffect cleanup -------------------------------
   useEffect(() => {
     // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
     return () => {
@@ -219,6 +220,8 @@ const BackgroundRemover = () => {
     anchor.download = selectedFile.name;
     // simulate a click on the anchor element
     anchor.click();
+    // delete the anchor element after use to avoid memory leaks
+    anchor.remove();
   };
 
   // --------------------- UI ------------------------------------------
@@ -236,6 +239,7 @@ const BackgroundRemover = () => {
             handleImageSelect(files[0]);
             setOption("original");
           }}
+          className={option === "original" ? styles.active : null}
         >
           Original Images
         </p>
@@ -244,6 +248,7 @@ const BackgroundRemover = () => {
             handleImageSelect(removedBgFiles[0]);
             setOption("removed");
           }}
+          className={option === "removed" ? styles.active : null}
         >
           Background Removed
         </p>
@@ -271,7 +276,7 @@ const BackgroundRemover = () => {
                 />
                 <div style={{ marginTop: "auto", marginBottom: "auto" }}>
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     color="error"
                     onClick={() => {
                       removeBackground();

@@ -142,7 +142,7 @@ export default function Blackbox() {
       </div>
 
       <div className={card}>
-        <h3 style={{ marginBottom: 10 }}>Search Using ASIN</h3>
+        <h3 style={{ marginTop: 0 }}>Search Using ASIN</h3>
         <form className={cardForm}>
           <TextField
             label="ASIN"

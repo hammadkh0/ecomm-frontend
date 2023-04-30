@@ -218,7 +218,9 @@ function Main_profile() {
       <ToastContainer />
 
       <div className={userCard}>
-        <h3>Update profile information</h3>
+        <h3 style={{ marginTop: 0, marginBottom: "1rem" }}>
+          Update profile information
+        </h3>
         <form onSubmit={handleUserSubmit(handleFormSubmit)}>
           {/* <ImageUpload getImage={getImage} /> */}
           <div className={`${userCard} ${imageCard}`}>

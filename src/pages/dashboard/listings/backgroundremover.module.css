@@ -1,9 +1,10 @@
 .dropZoneCard {
   padding: 16px;
-  border: 2px solid rgb(232, 232, 232);
+  border: 2px solid #707070;
   border-radius: 5px;
   width: 95%;
   display: inline-block;
+  background-color: #f1f0f0;
   /* margin-bottom: 1rem; */
 }
 .container {
@@ -62,7 +63,7 @@
   width: 350px;
   margin: auto;
   object-fit: cover;
-  border: 1px solid #d4d4d4;
+  border: 1px solid #707070;
   border-radius: 8px;
   padding:10px
 }
@@ -70,15 +71,22 @@
   display: flex;
   gap: 2rem;
   cursor: pointer;
-  font-size: 14px;
-  margin-top: -10px;
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 10px;
 }
 .options p:hover {
   color: var(--primary-color-2-light);
+  text-decoration: underline;
+}
+
+.active {
+  color: var(--primary-color-2-light);
+  text-decoration: underline;
 }
 
 .bgButton {
-  padding:2rem !important;
+  padding:1rem !important;
   border-radius: 8px !important;
   margin-right: 2rem !important; 
 }

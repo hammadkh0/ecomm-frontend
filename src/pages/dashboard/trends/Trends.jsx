@@ -102,9 +102,9 @@ const Trends = () => {
         width: "90%",
       }}
     >
-      <h2>Find different Trends</h2>
+      <h2 style={{ margin: 0 }}>Find different Trends</h2>
       <div id="card" className={Styles.card}>
-        <h3 style={{ marginBottom: 10 }}>Search Using Keywords</h3>
+        <h3 style={{ marginTop: 0, marginBottom: "1rem" }}>Search Using Keywords</h3>
 
         <form style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
           <TextField
