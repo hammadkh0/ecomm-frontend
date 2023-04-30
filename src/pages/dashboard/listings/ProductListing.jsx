@@ -14,6 +14,7 @@ const ProductListing = () => {
   const [bullet2, setBullet2] = useState("");
   const [bullet3, setBullet3] = useState("");
   const [bullet4, setBullet4] = useState("");
+  const [markdown, setMarkdown] = useState("");
 
   const bullets = [
     {
@@ -57,77 +58,123 @@ const ProductListing = () => {
         remove_duplicates: true,
         return_max_ngrams: 0,
       });
-      setKeywords(myKeywords.join("\n"));
+      setKeywords(myKeywords.join("\t"));
     }
   };
   return (
     <>
-      <p>Enter keywords to generate listing or write your own manually</p>
       <div className={styles.listing}>
-        <div className={styles.inputs}>
-          <form className={styles.form}>
-            <input
-              type="text"
-              className={[styles.textInput, styles.input].join(" ")}
-              placeholder="Enter some keywords"
-              value={input}
-              onChange={handleInput}
-            />
-            <textarea
-              value={keywords}
-              onChange={(e) => setKeywords(e.target.value)}
-              rows={7}
-              className={[styles.keywordsInput, styles.input].join(" ")}
-              id="keywords"
-              placeholder="Keywords generated"
-            />
+        {/* ----------------------- INPUTS --------------------------- */}
+        <div id="card" className={styles.card}>
+          <h3>Enter keywords to generate listing</h3>
+          <div className={styles.inputs}>
+            <form className={styles.form}>
+              <textarea
+                className={[styles.textInput, styles.input].join(" ")}
+                placeholder="Enter some keywords"
+                value={input}
+                onChange={handleInput}
+              />
+              <textarea
+                value={keywords}
+                onChange={(e) => setKeywords(e.target.value)}
+                rows={7}
+                className={[styles.keywordsInput, styles.input].join(" ")}
+                id="keywords"
+                placeholder="Keywords generated"
+              />
 
-            <Button className={styles.applyBtn} onClick={() => {}}>
-              Generate Listing
-            </Button>
-          </form>
+              <Button className={styles.applyBtn} onClick={() => {}}>
+                Generate Listing
+              </Button>
+            </form>
+          </div>
         </div>
 
-        {/* -------------------- TITLE OUTPUT ------------------------ */}
-        <div className={styles.outputs}>
-          <div className={[styles.title, styles.output].join(" ")}>
-            <div className={styles.outputHeading}>
-              <p>Title</p>
-              <CopyToClipboard text={title} />
+        {/* -------------------- TITLE TEXTAREA ------------------------ */}
+        <div id="card" className={styles.card}>
+          <div className={styles.cardData}>
+            <div>
+              <h3>Write your own listing or view the generated listing</h3>
+              <div className={styles.outputs}>
+                <div className={[styles.title, styles.output].join(" ")}>
+                  <div className={styles.outputHeading}>
+                    <p>Title</p>
+                    <CopyToClipboard text={title} />
+                  </div>
+
+                  <GrammarlyEditorPlugin
+                    clientId={`${import.meta.env.VITE_GRAMMARLY_CLIENT_ID}`}
+                  >
+                    <textarea
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      rows={3}
+                      className="titleInput"
+                    />
+                  </GrammarlyEditorPlugin>
+                </div>
+
+                {/* -------------------- BULLETS TEXTAREA ------------------------ */}
+                <Grammarly clientId={`${import.meta.env.VITE_GRAMMARLY_CLIENT_ID}`}>
+                  {bullets.map((bullet) => (
+                    <div className={styles.output} key={bullet.id}>
+                      <div className={styles.outputHeading}>
+                        <p>{bullet.name}</p>
+                        <CopyToClipboard text={bullet.value} />
+                      </div>
+                      <GrammarlyEditorPlugin>
+                        <textarea
+                          value={bullet.value}
+                          rows={5}
+                          className={bullet.class}
+                          id={bullet.id}
+                          onChange={bullet.setValue}
+                        />
+                      </GrammarlyEditorPlugin>
+                    </div>
+                  ))}
+                </Grammarly>
+              </div>
             </div>
 
-            <GrammarlyEditorPlugin
-              clientId={`${import.meta.env.VITE_GRAMMARLY_CLIENT_ID}`}
-            >
-              <textarea
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                rows={3}
-                className="titleInput"
-              />
-            </GrammarlyEditorPlugin>
-          </div>
-
-          {/* -------------------- BULLETS OUTPUT ------------------------ */}
-          <Grammarly clientId={`${import.meta.env.VITE_GRAMMARLY_CLIENT_ID}`}>
-            {bullets.map((bullet) => (
-              <div className={styles.output} key={bullet.id}>
-                <div className={styles.outputHeading}>
-                  <p>{bullet.name}</p>
-                  <CopyToClipboard text={bullet.value} />
-                </div>
-                <GrammarlyEditorPlugin>
-                  <textarea
-                    value={bullet.value}
-                    rows={5}
-                    className={bullet.class}
-                    id={bullet.id}
-                    onChange={bullet.setValue}
-                  />
-                </GrammarlyEditorPlugin>
+            {/* -------------------- RESULTS ------------------------ */}
+            <div>
+              <div className={styles.markdownBtns}>
+                <Button
+                  disabled={!title || !bullet1 || !bullet2 || !bullet3 || !bullet4}
+                  variant="outlined"
+                  color="warning"
+                  className={styles.markdownBtn}
+                >
+                  Create Markdown
+                </Button>
+                <Button
+                  disabled={!markdown.length}
+                  variant="outlined"
+                  color="success"
+                  className={styles.markdownBtn}
+                >
+                  Translate Markdown
+                </Button>
               </div>
-            ))}
-          </Grammarly>
+              <div>
+                <div className={styles.markdownOutput}>
+                  <div className={[styles.copy, styles.markdownCopy].join(" ")}>
+                    <CopyToClipboard text={markdown} />
+                  </div>
+                  <textarea
+                    name="markdown"
+                    className={styles.markdown}
+                    id="markdown"
+                    rows="21"
+                    value={markdown}
+                    onChange={(e) => setMarkdown(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>
