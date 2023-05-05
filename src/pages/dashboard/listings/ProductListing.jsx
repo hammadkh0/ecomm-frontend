@@ -1,12 +1,16 @@
-import React, { useState } from "react";
-import { Button } from "@mui/material";
+import React, { useContext, useState } from "react";
+import { Button, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { Grammarly, GrammarlyEditorPlugin } from "@grammarly/editor-sdk-react";
 import keyword_extractor from "keyword-extractor";
+import ReactCountryFlag from "react-country-flag";
+import { getCode } from "country-list";
 
+import { AuthContext } from "../../../context/auth-context";
 import CopyToClipboard from "../../../Component/Inputs/CopyToClipboard";
 import styles from "./productlisting.module.css";
 
 const ProductListing = () => {
+  const auth = useContext(AuthContext);
   const [input, setInput] = useState("");
   const [keywords, setKeywords] = useState("");
   const [title, setTitle] = useState("");
@@ -15,7 +19,7 @@ const ProductListing = () => {
   const [bullet3, setBullet3] = useState("");
   const [bullet4, setBullet4] = useState("");
   const [markdown, setMarkdown] = useState("");
-
+  const [targetLanguage, setTargetLanguage] = useState("");
   const bullets = [
     {
       name: "Bullet1",
@@ -60,6 +64,25 @@ const ProductListing = () => {
       });
       setKeywords(myKeywords.join("\t"));
     }
+  };
+
+  const translateListing = async () => {
+    const res = await fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/translate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${auth.token}`,
+        AccessControlAllowOrigin: "*",
+      },
+      body: JSON.stringify({
+        markdown,
+        targetLanguage,
+      }),
+    });
+
+    const data = await res.json();
+    console.log(data);
+    setMarkdown(data);
   };
   return (
     <>
@@ -149,15 +172,69 @@ const ProductListing = () => {
                 >
                   Create Markdown
                 </Button>
-                <Button
-                  disabled={!markdown.length}
-                  variant="outlined"
-                  color="success"
-                  className={styles.markdownBtn}
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "1rem",
+                  }}
                 >
-                  Translate Markdown
-                </Button>
+                  <div>
+                    <FormControl
+                      sx={{ minWidth: 120, width: "200px", marginTop: 0 }}
+                      size="small"
+                      className={styles.formControl}
+                    >
+                      <InputLabel id="demo-select-small">Langauge</InputLabel>
+                      <Select
+                        labelId="demo-select-small"
+                        id="demo-select-small"
+                        value={targetLanguage}
+                        label="Language"
+                        required
+                        onChange={(e) => {
+                          setTargetLanguage(e.target.value);
+                        }}
+                        sx={{ width: "100%" }}
+                      >
+                        <MenuItem value={"en"}>
+                          <span className={styles.languageName}>English</span>
+                          <ReactCountryFlag countryCode={"GB"} svg />
+                        </MenuItem>
+                        <MenuItem value={"nl"}>
+                          <span className={styles.languageName}>Dutch</span>
+                          <ReactCountryFlag
+                            countryCode={getCode("Netherlands")}
+                            svg
+                          />
+                        </MenuItem>
+                        <MenuItem value={"de"}>
+                          <span className={styles.languageName}>German</span>
+                          <ReactCountryFlag countryCode={getCode("Germany")} svg />
+                        </MenuItem>
+                        <MenuItem value={"zh-cn"}>
+                          <span className={styles.languageName}>Chinese</span>
+                          <ReactCountryFlag countryCode={getCode("China")} svg />
+                        </MenuItem>
+                        <MenuItem value={"ur"}>
+                          <span className={styles.languageName}>Urdu</span>
+                          <ReactCountryFlag countryCode={getCode("Pakistan")} svg />
+                        </MenuItem>
+                      </Select>
+                    </FormControl>
+                  </div>
+
+                  <Button
+                    disabled={!markdown.length}
+                    variant="outlined"
+                    color="success"
+                    className={styles.markdownBtn}
+                    onClick={() => translateListing()}
+                  >
+                    Translate Markdown
+                  </Button>
+                </div>
               </div>
+
               <div>
                 <div className={styles.markdownOutput}>
                   <div className={[styles.copy, styles.markdownCopy].join(" ")}>

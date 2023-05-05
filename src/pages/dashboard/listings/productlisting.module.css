@@ -112,10 +112,16 @@
 
 .markdownBtns {
     display: flex;
+    flex-direction: column;
+    width: 100%;
     gap: 1rem;
+}
+.languageName {
+    margin-right: 10px !important;
 }
 .markdownBtn {
     /* color: white;    */
+    width: 40%;
     border-radius: 6px;
     text-transform: capitalize;
     font-size: 14px;
