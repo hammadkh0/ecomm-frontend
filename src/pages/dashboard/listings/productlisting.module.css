@@ -3,10 +3,6 @@
     flex-direction: column;
     justify-content: space-between;
 }
-.inputs {
-    /* width: 35%; */
-    
-}
 .card {
     border: 1px solid rgb(217, 224, 232);
     border-radius: 6px;
@@ -20,9 +16,18 @@
 
 .form {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     width: 100%;
     gap: 1rem;
+}
+
+.form div:nth-child(2) {
+    display: flex;
+    /* flex-direction: column; */
+    gap: 10px;
+}
+.form > div button:first-of-type{
+    background-color: #444;
 }
 .input {
     padding: 10px;
@@ -44,14 +49,18 @@
     resize: none;
 }
 .applyBtn {
-    height: 50px;
-    margin-top: 1rem;
+    height: 45px;
     background-color: #1c8090;
     color: white;   
     border-radius: 6px;
     text-transform: capitalize;
-    font-size: 14px;
+    font-size: 13px;
     font-family: poppins;
+}
+.applyBtn:disabled {
+    color:#BDBDBD !important;
+    background-color: #fff !important;
+    border: 1px solid #BDBDBD !important; 
 }
 .applyBtn:hover{
     background-color: #29c0d7;

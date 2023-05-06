@@ -1,0 +1,14 @@
+.bubble {
+  font-family: poppins;
+  display: inline-flex;
+  gap: 5px;
+  flex-direction: row;
+  align-items: center;
+  width: max-content;
+  padding: 4px;
+  border: 2px solid #1c8090;
+  border-radius: 50px;
+  margin: 5px 10px;
+  cursor: pointer;
+  font-size: 14px;
+}

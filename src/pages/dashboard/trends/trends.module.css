@@ -13,7 +13,11 @@
   margin: 0 0 1rem 1rem;
 }
 .bubble {
-  display: inline-block;
+  display: inline-flex;
+  gap:5px;
+  flex-direction: row;
+  align-items: center;
+  width: max-content;
   padding: 8px;
   border: 2px solid #1c8090;
   border-radius: 50px;
@@ -26,7 +30,11 @@
   color: white;
 }
 .bubble2 {
-  display: inline-block;
+  display: inline-flex;
+  gap:5px;
+  flex-direction: row;
+  align-items: center;
+  width: max-content;
   padding: 8px;
   border: 2px solid #3e4e61;
   border-radius: 50px;

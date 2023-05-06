@@ -8,11 +8,13 @@ import { getCode } from "country-list";
 import { AuthContext } from "../../../context/auth-context";
 import CopyToClipboard from "../../../Component/Inputs/CopyToClipboard";
 import styles from "./productlisting.module.css";
+import SavedKeywordsModal from "../../../Component/Modals/SavedKeywordsModal";
 
 const ProductListing = () => {
   const auth = useContext(AuthContext);
-  const [input, setInput] = useState("");
+  const [show, setShow] = useState(false);
   const [keywords, setKeywords] = useState("");
+  const [savedKeywords, setSavedKeywords] = useState([]);
   const [title, setTitle] = useState("");
   const [bullet1, setBullet1] = useState("");
   const [bullet2, setBullet2] = useState("");
@@ -53,17 +55,7 @@ const ProductListing = () => {
 
   const handleInput = (e) => {
     const words = e.target.value;
-    setInput(words);
-    if (words.length > 3) {
-      const myKeywords = keyword_extractor.extract(words, {
-        language: "english",
-        remove_digits: true,
-        return_changed_case: false,
-        remove_duplicates: true,
-        return_max_ngrams: 0,
-      });
-      setKeywords(myKeywords.join("\t"));
-    }
+    setKeywords(words);
   };
 
   const translateListing = async () => {
@@ -84,32 +76,51 @@ const ProductListing = () => {
     console.log(data);
     setMarkdown(data);
   };
+
+  const viewSavedKeywords = () => {
+    // setSavedKeywords(JSON.parse(localStorage.getItem("savedKeywords")) || []);
+    setShow(true);
+  };
   return (
     <>
+      <SavedKeywordsModal
+        open={show}
+        handleClose={() => setShow(false)}
+        savedKeywords={savedKeywords}
+        setKeywords={setKeywords}
+      />
       <div className={styles.listing}>
         {/* ----------------------- INPUTS --------------------------- */}
         <div id="card" className={styles.card}>
           <h3>Enter keywords to generate listing</h3>
           <div className={styles.inputs}>
             <form className={styles.form}>
-              <textarea
-                className={[styles.textInput, styles.input].join(" ")}
-                placeholder="Enter some keywords"
-                value={input}
-                onChange={handleInput}
-              />
-              <textarea
-                value={keywords}
-                onChange={(e) => setKeywords(e.target.value)}
-                rows={7}
-                className={[styles.keywordsInput, styles.input].join(" ")}
-                id="keywords"
-                placeholder="Keywords generated"
-              />
+              <div>
+                <textarea
+                  className={[styles.textInput, styles.input].join(" ")}
+                  placeholder="Enter some keywords"
+                  value={keywords}
+                  onChange={handleInput}
+                />
+              </div>
 
-              <Button className={styles.applyBtn} onClick={() => {}}>
-                Generate Listing
-              </Button>
+              <div>
+                <Button
+                  disabled={!keywords.length}
+                  className={styles.applyBtn}
+                  onClick={() => {}}
+                >
+                  Generate Listing
+                </Button>
+                <Button
+                  className={styles.applyBtn}
+                  onClick={() => {
+                    viewSavedKeywords();
+                  }}
+                >
+                  Add Saved Keywords
+                </Button>
+              </div>
             </form>
           </div>
         </div>

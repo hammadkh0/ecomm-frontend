@@ -10,9 +10,10 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 
-import { Button, Rating, TextField } from "@mui/material";
+import { Button, Rating, Snackbar, TextField } from "@mui/material";
 import TransitionsModal from "../../../Component/featureSection/utils/Modal/Modal";
 import Styles from "./trends.module.css";
+import { SaveAltSharp, Check, ErrorOutline } from "@mui/icons-material";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -22,9 +23,7 @@ const Trends = () => {
   const [queries, setQueries] = React.useState();
   const [risingQueries, setRisingQueries] = React.useState();
   const [topics, setTopics] = React.useState();
-
   const [rankedProducts, setRankedProducts] = React.useState();
-
   const [error, setError] = React.useState();
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -95,6 +94,53 @@ const Trends = () => {
         setError(err);
         setOpen(false);
       });
+  }
+
+  function SaveKeyword({ keyword, id, style }) {
+    const [Icon, setIcon] = React.useState(SaveAltSharp);
+    const [hasCopied, setHasCopied] = React.useState(false);
+
+    function handleSaveKeyword() {
+      try {
+        // add to an array and save to loacal storage
+        const keywords = JSON.parse(localStorage.getItem("savedKeywords")) || [];
+        if (!keywords.includes(keyword)) keywords.push(keyword);
+
+        localStorage.setItem("savedKeywords", JSON.stringify(keywords));
+        setHasCopied(true);
+        setIcon(Check);
+
+        setTimeout(() => {
+          setIcon(SaveAltSharp);
+        }, 2000);
+      } catch (err) {
+        console.log(err);
+        setIcon(ErrorOutline);
+      }
+    }
+
+    return (
+      <>
+        <Snackbar
+          message="Copied to clipboard"
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          autoHideDuration={1000}
+          onClose={() => setHasCopied(false)}
+          open={hasCopied}
+        />
+        <p
+          className={style}
+          onClick={() => {
+            handleSaveKeyword(keyword, id);
+          }}
+        >
+          <span>{keyword}</span>
+          <span>
+            <Icon sx={{ fontSize: "24px" }} />
+          </span>
+        </p>
+      </>
+    );
   }
   return (
     <div
@@ -217,9 +263,9 @@ const Trends = () => {
           <div>
             {Object.values(queries).map((item, idx) => {
               return (
-                <p key={idx} className={Styles.bubble}>
-                  {item}
-                </p>
+                <div key={idx} style={{ display: "inline" }}>
+                  <SaveKeyword keyword={item} id={idx} style={Styles.bubble} />
+                </div>
               );
             })}
           </div>
@@ -235,9 +281,9 @@ const Trends = () => {
           <div>
             {Object.values(risingQueries).map((item, idx) => {
               return (
-                <p key={idx} className={Styles.bubble2}>
-                  {item}
-                </p>
+                <div key={idx} style={{ display: "inline" }}>
+                  <SaveKeyword keyword={item} id={idx} style={Styles.bubble2} />
+                </div>
               );
             })}
           </div>
