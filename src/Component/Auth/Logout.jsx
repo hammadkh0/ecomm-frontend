@@ -10,9 +10,16 @@ const Logout = () => {
         height: "100svh",
       }}
     >
-      <div>
-        <CircularProgress sx={{ fontWeight: "bold", fontSize: "24px" }} />
-        <h3>Logging out......</h3>
+      <div
+        style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+      >
+        <CircularProgress
+          size={50}
+          sx={{
+            fontWeight: "bold",
+          }}
+        />
+        <h2>Logging out...</h2>
       </div>
     </div>
   );

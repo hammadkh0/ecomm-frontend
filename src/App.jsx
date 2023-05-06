@@ -5,12 +5,12 @@ import { useAuth } from "./hooks/auth-hook";
 
 import "react-toastify/dist/ReactToastify.css";
 import { CircularProgress, ThemeProvider } from "@mui/material";
-import Logout from "./Component/Logout";
 import BackgroundRemover from "./pages/dashboard/listings/BackgroundRemover";
 import { theme } from "./themes/theme";
 
 // User Routes
 import Login from "./pages/authentication/Login";
+import Logout from "./Component/Auth/Logout";
 const Signup = lazy(() => import("./pages/authentication/Signup"));
 const ForgetPassword = lazy(() => import("./pages/authentication/ForgetPassword"));
 const Homepage = lazy(() => import("./pages/landing/Homepage"));
