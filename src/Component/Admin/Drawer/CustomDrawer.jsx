@@ -15,6 +15,8 @@ import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar from "@mui/material/AppBar";
 
 import Logo from "../../../Images/Logo.png";
+import { Button } from "@mui/material";
+import Notebook from "../../Modals/Notebook";
 
 export const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -102,7 +104,7 @@ const CustomDrawer = (props) => {
         open={open}
         sx={{ backgroundColor: "white", boxShadow: "5px 5px 5px #D6D8D9" }}
       >
-        <Toolbar>
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -129,6 +131,7 @@ const CustomDrawer = (props) => {
           >
             {props.userType} Dashboard
           </Typography>
+          <Notebook />
         </Toolbar>
         <Divider />
       </AppBar>

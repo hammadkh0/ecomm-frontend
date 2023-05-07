@@ -1,0 +1,15 @@
+.notebookBtns {
+  margin-right: 1rem;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 80px;
+  font-family: inherit;
+}
+.notebookBtns:disabled {
+    background-color: #ccc !important;
+    cursor: not-allowed !important;
+}
+/* get first button of .notebookBtns */
