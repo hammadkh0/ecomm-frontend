@@ -40,15 +40,7 @@ function Login() {
   const passwordDisplay = () => {
     showPassword === "text" ? setShowPassword("password") : setShowPassword("text");
   };
-  const PasswordError = () => (
-    <p>
-      Password must contain at least <br /> One lowercase letter <br />
-      One uppercase letter <br />
-      One digit <br />
-      One special character <br />
-      Length of the password is at least 8 characters.
-    </p>
-  );
+  const PasswordError = () => <p>Password must contain at least 8 characters.</p>;
   const authSubmitHandler = async (formData) => {
     try {
       const responseData = await sendRequest(

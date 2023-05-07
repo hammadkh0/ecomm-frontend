@@ -58,16 +58,17 @@ export default function Signup() {
   };
 
   // --------------------------- AUTH FUNCTIONS ---------------------------
-  const responseFacebook = (response) => {
-    console.log(response);
-  };
+  const responseFacebook = async (data) => {
+    console.log(data);
 
-  const googleLoginSuccess = async (data) => {
-    //console.log(data.credential);
-    const profile = jwtDecode(data.credential);
+    const profile = {
+      email: data.email,
+      name: data.name,
+      userId: data.userID,
+    };
 
     const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/ecomm/users/auth/google`,
+      `${import.meta.env.VITE_BACKEND_URL}/ecomm/users/auth/third-party`,
       {
         method: "POST",
         headers: {
@@ -80,6 +81,40 @@ export default function Signup() {
           user: {
             credential: profile,
           },
+          authType: "facebook",
+        }),
+      }
+    );
+
+    const res = await response.json();
+    const user = res.data.user;
+
+    toastSuccess("Signed in successfully");
+    setTimeout(() => {
+      auth.login(user._id, user.role, res.token, user.name);
+      user.role === "user" ? navigate("/dashboard") : navigate("/admin/dashboard");
+    }, 1500);
+  };
+
+  const googleLoginSuccess = async (data) => {
+    //console.log(data.credential);
+    const profile = jwtDecode(data.credential);
+
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/ecomm/users/auth/third-party`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Methods": "*",
+          "Access-Control-Allow-Origin": import.meta.env.VITE_BACKEND_URL,
+        },
+        mode: "cors",
+        body: JSON.stringify({
+          user: {
+            credential: profile,
+          },
+          authType: "google",
         }),
       }
     );
@@ -340,13 +375,13 @@ export default function Signup() {
             <hr />
             <div className={`${SignupStyle.tp_div}`}>
               <p>Sign Up with:</p>
-              <div style={{ display: "flex", justifyContent: "space-evenly" }}>
-                {/* <div className={SignupStyle.tp_icon} onClick={renderProps.onClick}>
-                    <div>
-                      <Google />
-                    </div>
-                  </div> */}
-
+              <div
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                  marginBottom: "1rem",
+                }}
+              >
                 <GoogleOAuthProvider
                   clientId={`${import.meta.env.VITE_GOOGLE_CLIENT_ID}`}
                 >
@@ -360,19 +395,20 @@ export default function Signup() {
                   />
                 </GoogleOAuthProvider>
 
-                {/* <FacebookLogin
-                  appId={`${import.meta.env.VITE_FACEBOOK_CLIENT_ID}`
+                <FacebookLogin
+                  appId={`${import.meta.env.VITE_FACEBOOK_CLIENT_ID}`}
                   autoLoad={false}
                   callback={responseFacebook}
+                  fields="name,email,picture"
                   render={(renderProps) => (
                     <div
                       className={SignupStyle.tp_icon}
                       onClick={renderProps.onClick}
                     >
-                      <FacebookTwoTone />
+                      Signup with Facebook
                     </div>
                   )}
-                /> */}
+                />
               </div>
             </div>
           </div>

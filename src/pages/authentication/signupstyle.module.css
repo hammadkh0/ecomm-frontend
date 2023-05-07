@@ -197,16 +197,20 @@ p {
     margin-bottom: 1rem;
 }
 .tp_icon {
-    padding: 1rem;
-    border-radius: 15px;
-    border: 1px solid;
-    width: 5rem;
-    height: 1.5rem;
-    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    border: 1px solid #2673E4;
+    width: 50%;
+    background-color: #2673E4;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
 
 }
 .tp_icon:hover {
-    background-color: #eee;
+    background-color: #074eb9;;
 }
 
 @media(max-width:992px) {
