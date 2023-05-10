@@ -1,7 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Button, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { Grammarly, GrammarlyEditorPlugin } from "@grammarly/editor-sdk-react";
-import keyword_extractor from "keyword-extractor";
 import ReactCountryFlag from "react-country-flag";
 import { getCode } from "country-list";
 
@@ -78,7 +77,7 @@ const ProductListing = () => {
   };
 
   const viewSavedKeywords = () => {
-    // setSavedKeywords(JSON.parse(localStorage.getItem("savedKeywords")) || []);
+    setSavedKeywords(JSON.parse(localStorage.getItem("savedKeywords")) || []);
     setShow(true);
   };
   return (

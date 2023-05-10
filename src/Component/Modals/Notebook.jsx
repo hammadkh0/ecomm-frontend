@@ -26,8 +26,11 @@ export default function Notebook() {
       .trim()
       .split(",")
       .map((keyword) => keyword.trim());
-
-    localStorage.setItem("savedKeywords", JSON.stringify(keywordsArr));
+    const existingKeywords = JSON.parse(localStorage.getItem("savedKeywords")) || [];
+    localStorage.setItem(
+      "savedKeywords",
+      JSON.stringify([...existingKeywords, ...keywordsArr])
+    );
     setKeywords("");
     handleClose();
   };

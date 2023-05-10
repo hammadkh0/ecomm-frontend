@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import styles from "./drawer.module.css";
-
+import { AuthContext } from "../../../context/auth-context";
 import IconButton from "@mui/material/IconButton";
 
 import MenuIcon from "@mui/icons-material/Menu";
@@ -29,6 +29,7 @@ export const DrawerHeader = styled("div")(({ theme }) => ({
 
 const CustomDrawer = (props) => {
   const theme = useTheme();
+  const auth = useContext(AuthContext);
 
   const drawerWidth = 255;
   const [open, setOpen] = React.useState(true);
@@ -131,7 +132,7 @@ const CustomDrawer = (props) => {
           >
             {props.userType} Dashboard
           </Typography>
-          <Notebook />
+          {auth.role === "user" ? <Notebook /> : null}
         </Toolbar>
         <Divider />
       </AppBar>

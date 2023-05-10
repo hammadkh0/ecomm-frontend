@@ -21,11 +21,13 @@ const style = {
   borderRadius: 3,
 };
 
-const kwds = JSON.parse(localStorage.getItem("savedKeywords"));
-
 const SavedKeywordsModal = (props) => {
-  const [savedKeywords, setSavedKeywords] = React.useState(kwds);
+  const [savedKeywords, setSavedKeywords] = React.useState([]);
   const [selectedKeywords, setSelectedKeywords] = React.useState([]);
+
+  React.useEffect(() => {
+    setSavedKeywords(props.savedKeywords);
+  }, [props.savedKeywords]);
 
   console.log({ savedKeywords });
   console.log({ selectedKeywords });
@@ -91,7 +93,7 @@ const SavedKeywordsModal = (props) => {
               Saved Keywords
             </Typography>
             {savedKeywords?.map((keyword, idx) => (
-              <p key={idx} className={styles.bubble}>
+              <p key={idx} className={[styles.bubble, styles.saved].join(" ")}>
                 <span onClick={() => handleSelectedKeywords(keyword)}>
                   {keyword}
                 </span>
@@ -114,7 +116,7 @@ const SavedKeywordsModal = (props) => {
               Selected Keywords
             </Typography>
             {selectedKeywords?.map((keyword, idx) => (
-              <p key={idx} className={styles.bubble}>
+              <p key={idx} className={[styles.bubble, styles.selected].join(" ")}>
                 <span>{keyword}</span>
                 <span onClick={() => handleRemoveSelected(keyword)}>
                   <Close />
@@ -122,7 +124,8 @@ const SavedKeywordsModal = (props) => {
               </p>
             ))}
           </Box>
-          <Box>
+          <hr />
+          <Box className={styles.buttons}>
             <Button
               id="transition-btn"
               variant="outlined"

@@ -167,6 +167,7 @@ const App = () => {
         login,
         logout,
         name,
+        role,
       }}
     >
       <BrowserRouter>
