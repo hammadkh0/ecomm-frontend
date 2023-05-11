@@ -13,6 +13,7 @@ const ProductListing = () => {
   const auth = useContext(AuthContext);
   const [show, setShow] = useState(false);
   const [keywords, setKeywords] = useState("");
+  const [keywordsList, setKeywordsList] = useState([]); // [{keyword: "abc", count: 2}, {keyword: "xyz", count: 1}
   const [savedKeywords, setSavedKeywords] = useState([]);
   const [title, setTitle] = useState("");
   const [bullet1, setBullet1] = useState("");
@@ -52,10 +53,52 @@ const ProductListing = () => {
     },
   ];
 
+  const badgeRefs = Array(keywordsList.length).fill(null);
+
   const handleInput = (e) => {
     const words = e.target.value;
     setKeywords(words);
   };
+
+  const applyKeywords = () => {
+    const words = keywords.split(" ").map((word) => ({ word, keywordCount: 0 }));
+    setKeywordsList(words);
+  };
+
+  const viewSavedKeywords = () => {
+    setSavedKeywords(JSON.parse(localStorage.getItem("savedKeywords")) || []);
+    setShow(true);
+  };
+
+  // some magic idk how it works but it does so don't touch it or it will break everything and you will be sad :(
+  function setKeywordRef(el, index) {
+    if (el && badgeRefs[index] !== null) {
+      // get width of keyword by getting width of the element that contains the keyword
+      const keywordWidth = el.offsetWidth;
+
+      // get width and height of badge
+      const badgeWidth = badgeRefs[index].offsetWidth;
+      const badgeHeight = badgeRefs[index].offsetHeight;
+
+      // calculate top and right position of badge
+      const badgeTop = -Math.round(badgeHeight / 2);
+      const badgeRight = Math.round(keywordWidth - badgeWidth + 4);
+      /* 
+        -> set position of badge. It does by setting the top and right css properties of the badge relative to the div that contains the keyword.
+        -> The div that contains the keyword is positioned relative and the badge is positioned absolute.
+        -> It wont work if you set the style in the css file
+      */
+      badgeRefs[index].style.top = `${badgeTop}px`;
+      badgeRefs[index].style.right = `${badgeRight}px`;
+    }
+  }
+
+  function setBadgeRef(el, index) {
+    if (badgeRefs[index] === null) {
+      badgeRefs[index] = el;
+      // badgeRefs contains the refs of all the badges
+    }
+  }
 
   const translateListing = async () => {
     const res = await fetch(`${import.meta.env.VITE_FLASK_URL}/ecomm/translate`, {
@@ -76,9 +119,61 @@ const ProductListing = () => {
     setMarkdown(data);
   };
 
-  const viewSavedKeywords = () => {
-    setSavedKeywords(JSON.parse(localStorage.getItem("savedKeywords")) || []);
-    setShow(true);
+  // update keyword count of every keyword in the keywords array on every change in the title textarea and bullets textarea
+  const updateKeywordCount = () => {
+    const titleWords = title.split(" ");
+    const bullet1Words = bullet1.split(" ");
+    const bullet2Words = bullet2.split(" ");
+    const bullet3Words = bullet3.split(" ");
+    const bullet4Words = bullet4.split(" ");
+
+    const updatedKeywords = keywordsList.map(({ word: keyword }) => {
+      let count = 0;
+      console.log(
+        "🚀 ~ file: ProductListing.jsx:163 ~ updatedKeywords ~ keyword:",
+        keyword
+      );
+      console.log(
+        "🚀 ~ file: ProductListing.jsx:163 ~ updatedKeywords ~ titleWords:",
+        titleWords
+      );
+
+      titleWords.forEach((word) => {
+        if (word.toLowerCase() === keyword.toLowerCase()) {
+          count++;
+        }
+      });
+      bullet1Words.forEach((word) => {
+        if (word.toLowerCase() === keyword.toLowerCase()) {
+          count++;
+        }
+      });
+      bullet2Words.forEach((word) => {
+        if (word.toLowerCase() === keyword.toLowerCase()) {
+          count++;
+        }
+      });
+      bullet3Words.forEach((word) => {
+        if (word.toLowerCase() === keyword.toLowerCase()) {
+          count++;
+        }
+      });
+      bullet4Words.forEach((word) => {
+        if (word.toLowerCase() === keyword.toLowerCase()) {
+          count++;
+        }
+      });
+      console.log("count", count);
+      return {
+        word: keyword,
+        keywordCount: count,
+      };
+    });
+    // console.log(
+    //   "🚀 ~ file: ProductListing.jsx:127 ~ updateKeywordCount ~ updatedKeywords:",
+    //   updatedKeywords
+    // );
+    setKeywordsList(updatedKeywords);
   };
   return (
     <>
@@ -86,8 +181,10 @@ const ProductListing = () => {
         open={show}
         handleClose={() => setShow(false)}
         savedKeywords={savedKeywords}
+        setKeywordsList={setKeywordsList}
         setKeywords={setKeywords}
       />
+
       <div className={styles.listing}>
         {/* ----------------------- INPUTS --------------------------- */}
         <div id="card" className={styles.card}>
@@ -95,22 +192,40 @@ const ProductListing = () => {
           <div className={styles.inputs}>
             <form className={styles.form}>
               <div>
-                <textarea
-                  className={[styles.textInput, styles.input].join(" ")}
-                  placeholder="Enter some keywords"
-                  value={keywords}
-                  onChange={handleInput}
-                />
+                {!keywordsList.length ? (
+                  <textarea
+                    className={[styles.textInput, styles.input].join(" ")}
+                    placeholder="Enter some keywords"
+                    value={keywords}
+                    onChange={handleInput}
+                  />
+                ) : (
+                  <div className={[styles.keywordsList, styles.input].join(" ")}>
+                    {keywordsList.map((keyword, index) => (
+                      <span key={index} style={{ position: "relative" }}>
+                        <span
+                          className={styles.badgeCount}
+                          ref={(el) => setBadgeRef(el, index)}
+                        >
+                          {keyword.keywordCount}
+                        </span>
+                        <span
+                          ref={(el) => setKeywordRef(el, index)}
+                          style={
+                            keywordsList[index].keywordCount > 0
+                              ? { textDecoration: "line-through" }
+                              : null
+                          }
+                        >
+                          {keyword.word}
+                        </span>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div>
-                <Button
-                  disabled={!keywords.length}
-                  className={styles.applyBtn}
-                  onClick={() => {}}
-                >
-                  Generate Listing
-                </Button>
                 <Button
                   className={styles.applyBtn}
                   onClick={() => {
@@ -119,6 +234,25 @@ const ProductListing = () => {
                 >
                   Add Saved Keywords
                 </Button>
+                {!keywordsList.length ? (
+                  <Button
+                    disabled={!keywords.length}
+                    className={styles.applyBtn}
+                    onClick={() => {
+                      applyKeywords();
+                    }}
+                  >
+                    Apply
+                  </Button>
+                ) : (
+                  <Button
+                    className={styles.applyBtn}
+                    onClick={() => {}}
+                    disabled={!keywordsList.length}
+                  >
+                    Generate Listing
+                  </Button>
+                )}
               </div>
             </form>
           </div>
@@ -141,7 +275,10 @@ const ProductListing = () => {
                   >
                     <textarea
                       value={title}
-                      onChange={(e) => setTitle(e.target.value)}
+                      onChange={(e) => {
+                        setTitle(e.target.value);
+                        updateKeywordCount();
+                      }}
                       rows={3}
                       className="titleInput"
                     />
@@ -162,7 +299,10 @@ const ProductListing = () => {
                           rows={5}
                           className={bullet.class}
                           id={bullet.id}
-                          onChange={bullet.setValue}
+                          onChange={(e) => {
+                            bullet.setValue(e);
+                            updateKeywordCount();
+                          }}
                         />
                       </GrammarlyEditorPlugin>
                     </div>

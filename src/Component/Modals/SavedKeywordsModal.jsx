@@ -29,8 +29,6 @@ const SavedKeywordsModal = (props) => {
     setSavedKeywords(props.savedKeywords);
   }, [props.savedKeywords]);
 
-  console.log({ savedKeywords });
-  console.log({ selectedKeywords });
   const handleSelectedKeywords = (keyword) => {
     setSelectedKeywords((prev) => {
       if (!prev.includes(keyword)) {
@@ -47,6 +45,7 @@ const SavedKeywordsModal = (props) => {
 
   const handleUseKeywords = () => {
     const kws = selectedKeywords.join(" ");
+    props.setKeywordsList([]);
     props.setKeywords(kws);
     props.handleClose();
   };
