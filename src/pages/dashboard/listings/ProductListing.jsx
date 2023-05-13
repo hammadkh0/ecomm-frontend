@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Button, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { Grammarly, GrammarlyEditorPlugin } from "@grammarly/editor-sdk-react";
 import ReactCountryFlag from "react-country-flag";
@@ -54,6 +54,10 @@ const ProductListing = () => {
     },
   ];
 
+  useEffect(() => {
+    updateKeywordCount();
+  }, [title, bullet1, bullet2, bullet3, bullet4]);
+
   const badgeRefs = Array(keywordsList.length).fill(null);
 
   const handleInput = (e) => {
@@ -75,7 +79,10 @@ const ProductListing = () => {
   };
 
   const applyKeywords = () => {
-    const words = keywords.split(" ").map((word) => ({ word, keywordCount: 0 }));
+    const words = keywords
+      .replace(/\n/g, " ")
+      .split(" ")
+      .map((word) => ({ word, keywordCount: 0 }));
     setKeywordsList(words);
   };
 
@@ -257,6 +264,88 @@ const ProductListing = () => {
     }
   };
 
+  const handleGenerate = async () => {
+    console.log(keywordsList.map((kwd) => kwd.word).join(" "));
+    setTitle("");
+    setBullet1("");
+    setBullet2("");
+    setBullet3("");
+    setBullet4("");
+    setMarkdown("");
+
+    const response = await fetch(
+      `${import.meta.env.VITE_FLASK_URL}/ecomm/generate-listing`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: `I am a seller at amazon.com and I want to sell a product. Help me in writing an eye catching information about the product so that it will grab the buyers attention. For that I want you to write an eye catching detailed and descriptive product title using the keywords provided below. Then write descriptive bullet points for the product description using the keywords below. Keywords are: '${keywordsList
+            .map((kwd) => kwd.word)
+            .join(" ")}'
+
+          Format the response like Title: <your title>
+          Bullet1:<first bullet point>
+          Bullet2: <second bullet point> etc.
+          The response must include the provided keywords because they are the most searched keywords on amazon.com. `,
+        }),
+      }
+    );
+
+    const stream = response.body;
+    const reader = stream.getReader();
+    const readStream = async () => {
+      const { done, value } = await reader.read();
+      if (done) return;
+
+      // result += new TextDecoder("utf-8").decode(value);
+      // console.log(
+      //   "🚀 ~ file: ProductListing.jsx:208 ~ handleGenerate ~ result:",
+      //   result
+      // );
+      // Convert the received chunk of data to a string
+      const chunk = new TextDecoder().decode(value);
+
+      // Split the chunk by newline to extract each JSON response
+      const responses = chunk.split("\n");
+      responses.forEach((response) => {
+        if (response.trim() !== "") {
+          // Parse the JSON response and process the results
+          const result = JSON.parse(response);
+          // Process the results as needed (e.g., update UI)
+          console.log("Received batch of results:", result);
+
+          const outputs = result.response.split("\n");
+          outputs.forEach((output) => {
+            output = output.trim();
+            if (output.startsWith("Title")) {
+              setTitle(output.split(":")[1]);
+            } else if (output.startsWith("Bullet1")) {
+              setBullet1(output.split(":")[1]);
+            } else if (output.startsWith("Bullet2")) {
+              setBullet2(output.split(":")[1]);
+            } else if (output.startsWith("Bullet3")) {
+              setBullet3(output.split(":")[1]);
+            } else if (output.startsWith("Bullet4")) {
+              setBullet4(output.split(":")[1]);
+            }
+          });
+        }
+      });
+      // Continue reading the stream
+      return readStream();
+    };
+    // Start reading the stream
+    return readStream();
+  };
+
+  const createText = () => {
+    setMarkdown(
+      `Title: ${title} \n\n Bullet 1: ${bullet1} \n\n Bullet 2: ${bullet2} \n\n Bullet 3: ${bullet3} \n\n Bullet 4: ${bullet4}`
+    );
+  };
+
   return (
     <>
       <SavedKeywordsModal
@@ -329,7 +418,9 @@ const ProductListing = () => {
                 ) : (
                   <Button
                     className={styles.applyBtn}
-                    onClick={() => {}}
+                    onClick={() => {
+                      handleGenerate();
+                    }}
                     disabled={!keywordsList.length}
                   >
                     Generate Listing
@@ -434,6 +525,7 @@ const ProductListing = () => {
                   variant="outlined"
                   color="warning"
                   className={styles.markdownBtn}
+                  onClick={() => createText()}
                 >
                   Create Text
                 </Button>
@@ -456,6 +548,7 @@ const ProductListing = () => {
                         value={targetLanguage}
                         label="Language"
                         required
+                        defaultValue="en"
                         onChange={(e) => {
                           setTargetLanguage(e.target.value);
                         }}
@@ -505,14 +598,18 @@ const ProductListing = () => {
                   <div className={[styles.copy, styles.markdownCopy].join(" ")}>
                     <CopyToClipboard text={markdown} />
                   </div>
-                  <textarea
-                    name="markdown"
-                    className={styles.markdown}
-                    id="markdown"
-                    rows="21"
-                    value={markdown}
-                    onChange={(e) => setMarkdown(e.target.value)}
-                  />
+                  <GrammarlyEditorPlugin
+                    clientId={`${import.meta.env.VITE_GRAMMARLY_CLIENT_ID}`}
+                  >
+                    <textarea
+                      name="markdown"
+                      className={styles.markdown}
+                      id="markdown"
+                      rows="21"
+                      value={markdown}
+                      onChange={(e) => setMarkdown(e.target.value)}
+                    />
+                  </GrammarlyEditorPlugin>
                 </div>
               </div>
             </div>
