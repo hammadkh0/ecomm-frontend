@@ -25,6 +25,7 @@
     "keyword-extractor": "^0.0.25",
     "react": "^18.0.0",
     "react-chartjs-2": "^5.2.0",
+    "react-contenteditable": "^3.3.7",
     "react-country-flag": "^3.0.2",
     "react-dom": "^18.0.0",
     "react-dropzone": "^14.2.3",

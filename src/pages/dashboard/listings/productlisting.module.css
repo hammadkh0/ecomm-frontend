@@ -102,7 +102,7 @@
 
 .outputs {
     /* width: 55%; */
-    height: 80.5vh;
+    height: 89vh;
     overflow-y: scroll;
     margin-right: 2rem;
 }
@@ -126,6 +126,19 @@
     font-size: 14px;
 }
 
+.outputHeading + grammarly-editor-plugin div {
+    direction: ltr;
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    outline: none;
+    background-color: #fff;
+    font-family: poppins;
+    min-height: 50px;
+    max-height: 120px;
+    overflow-y: scroll;
+    user-select: text;
+}
 .outputHeading + grammarly-editor-plugin textarea {
     width: 100%;
     padding: 8px;
