@@ -8,10 +8,15 @@ import { AuthContext } from "../../../context/auth-context";
 import CopyToClipboard from "../../../Component/Inputs/CopyToClipboard";
 import styles from "./productlisting.module.css";
 import SavedKeywordsModal from "../../../Component/Modals/SavedKeywordsModal";
-import ContentEditable from "react-contenteditable";
+import TransitionsModal from "../../../Component/featureSection/utils/Modal/Modal";
 
 const ProductListing = () => {
   const auth = useContext(AuthContext);
+
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   const [show, setShow] = useState(false);
   const [keywords, setKeywords] = useState("");
   const [keywordsList, setKeywordsList] = useState([]); // [{keyword: "abc", count: 2}, {keyword: "xyz", count: 1}
@@ -22,60 +27,43 @@ const ProductListing = () => {
   const [bullet3, setBullet3] = useState("");
   const [bullet4, setBullet4] = useState("");
   const [markdown, setMarkdown] = useState("");
-  const [targetLanguage, setTargetLanguage] = useState("");
+  const [targetLanguage, setTargetLanguage] = useState("en");
   const bullets = [
     {
       name: "Bullet1",
       class: "bullet",
       id: "bullet1",
       value: bullet1,
-      setValue: (content) => setBullet1(content),
+      setValue: (e) => setBullet1(e.target.value),
     },
     {
       name: "Bullet2",
       class: "bullet",
       id: "bullet2",
       value: bullet2,
-      setValue: (content) => setBullet2(content),
+      setValue: (e) => setBullet2(e.target.value),
     },
     {
       name: "Bullet3",
       class: "bullet",
       id: "bullet3",
       value: bullet3,
-      setValue: (content) => setBullet3(content),
+      setValue: (e) => setBullet3(e.target.value),
     },
     {
       name: "Bullet4",
       class: "bullet",
       id: "bullet4",
       value: bullet4,
-      setValue: (content) => setBullet4(content),
+      setValue: (e) => setBullet4(e.target.value),
     },
   ];
-
-  useEffect(() => {
-    updateKeywordCount();
-  }, [title, bullet1, bullet2, bullet3, bullet4]);
 
   const badgeRefs = Array(keywordsList.length).fill(null);
 
   const handleInput = (e) => {
     const words = e.target.value;
     setKeywords(words);
-  };
-
-  const decorateKeywords = (type) => {
-    // type === 'title' or 'bullet1 .... bullet4'
-    // if (type === "") return `<p></p>`;
-    let newTitle = type;
-    console.log(
-      "🚀 ~ file: ProductListing.jsx:68 ~ decorateKeywords ~ newTitle:",
-      newTitle
-    );
-
-    newTitle = `<p>${newTitle}</p>`;
-    return newTitle;
   };
 
   const applyKeywords = () => {
@@ -140,109 +128,38 @@ const ProductListing = () => {
     setMarkdown(data);
   };
 
-  const parseHTML = (text) => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(text, "text/html").querySelectorAll("p");
-    const docTxt = Array.from(doc)
-      .map((p) => p.textContent.trim())
-      .filter((p) => p !== "")[0];
-    return docTxt;
-  };
-
   // update keyword count of every keyword in the keywords array on every change in the title textarea and bullets textarea
-  const updateKeywordCount = (content, type) => {
-    const parser = new DOMParser();
-    let titleWordsHTML, bullet1HTML, bullet2HTML, bullet3HTML, bullet4HTML;
-    let titleWords = [],
-      bullet1Words = [],
-      bullet2Words = [],
-      bullet3Words = [],
-      bullet4Words = [];
-
-    //
-    // if (type === "title") {
-    titleWordsHTML = parser
-      .parseFromString(type === "title" ? content : title, "text/html")
-      .querySelectorAll("p");
-    titleWords = Array.from(titleWordsHTML)
-      .map((p) => p.textContent.trim())
-      .filter((p) => p !== "")[0]
-      ?.split(" ");
-    console.log(
-      "🚀 ~ file: ProductListing.jsx:154 ~ updateKeywordCount ~ titleWords:",
-      titleWords
-    );
-
-    //
-    // } else if (type === "bullet1") {
-    bullet1HTML = parser
-      .parseFromString(type === "bullet1" ? content : bullet1, "text/html")
-      .querySelectorAll("p");
-    bullet1Words = Array.from(bullet1HTML)
-      .map((p) => p.textContent.trim())
-      .filter((p) => p !== "")[0]
-      ?.split(" ");
-    console.log(
-      "🚀 ~ file: ProductListing.jsx:159 ~ updateKeywordCount ~ bullet1Words:",
-      bullet1Words
-    );
-
-    //
-    // } else if (type === "bullet2") {
-    bullet2HTML = parser
-      .parseFromString(type === "bullet2" ? content : bullet2, "text/html")
-      .querySelectorAll("p");
-    bullet2Words = Array.from(bullet2HTML)
-      .map((p) => p.textContent.trim())
-      .filter((p) => p !== "")[0]
-      ?.split(" ");
-
-    //
-    // } else if (type === "bullet3") {
-    bullet3HTML = parser
-      .parseFromString(type === "bullet3" ? content : bullet3, "text/html")
-      .querySelectorAll("p");
-    bullet3Words = Array.from(bullet3HTML)
-      .map((p) => p.textContent.trim())
-      .filter((p) => p !== "")[0]
-      ?.split(" ");
-
-    //
-    // } else if (type === "bullet4") {
-    bullet4HTML = parser
-      .parseFromString(type === "bullet4" ? content : bullet4, "text/html")
-      .querySelectorAll("p");
-
-    bullet4Words = Array.from(bullet4HTML)
-      .map((p) => p.textContent.trim())
-      .filter((p) => p !== "")[0]
-      ?.split(" ");
-    // }
+  const updateKeywordCount = () => {
+    const titleWords = title.split(" ");
+    const bullet1Words = bullet1.split(" ");
+    const bullet2Words = bullet2.split(" ");
+    const bullet3Words = bullet3.split(" ");
+    const bullet4Words = bullet4.split(" ");
 
     const updatedKeywords = keywordsList.map(({ word: keyword }) => {
       let count = 0;
 
-      titleWords?.forEach((word) => {
+      titleWords.forEach((word) => {
         if (word.toLowerCase() === keyword.toLowerCase()) {
           count++;
         }
       });
-      bullet1Words?.forEach((word) => {
+      bullet1Words.forEach((word) => {
         if (word.toLowerCase() === keyword.toLowerCase()) {
           count++;
         }
       });
-      bullet2Words?.forEach((word) => {
+      bullet2Words.forEach((word) => {
         if (word.toLowerCase() === keyword.toLowerCase()) {
           count++;
         }
       });
-      bullet3Words?.forEach((word) => {
+      bullet3Words.forEach((word) => {
         if (word.toLowerCase() === keyword.toLowerCase()) {
           count++;
         }
       });
-      bullet4Words?.forEach((word) => {
+      bullet4Words.forEach((word) => {
         if (word.toLowerCase() === keyword.toLowerCase()) {
           count++;
         }
@@ -253,15 +170,7 @@ const ProductListing = () => {
         keywordCount: count,
       };
     });
-    console.log(
-      "🚀 ~ file: ProductListing.jsx:237 ~ updatedKeywords ~ updatedKeywords:",
-      updatedKeywords
-    );
-    if (!updatedKeywords.length) {
-      return;
-    } else {
-      setKeywordsList(updatedKeywords);
-    }
+    setKeywordsList(updatedKeywords);
   };
 
   const handleGenerate = async () => {
@@ -272,6 +181,7 @@ const ProductListing = () => {
     setBullet3("");
     setBullet4("");
     setMarkdown("");
+    setOpen(true);
 
     const response = await fetch(
       `${import.meta.env.VITE_FLASK_URL}/ecomm/generate-listing`,
@@ -299,11 +209,6 @@ const ProductListing = () => {
       const { done, value } = await reader.read();
       if (done) return;
 
-      // result += new TextDecoder("utf-8").decode(value);
-      // console.log(
-      //   "🚀 ~ file: ProductListing.jsx:208 ~ handleGenerate ~ result:",
-      //   result
-      // );
       // Convert the received chunk of data to a string
       const chunk = new TextDecoder().decode(value);
 
@@ -333,6 +238,7 @@ const ProductListing = () => {
           });
         }
       });
+      setOpen(false);
       // Continue reading the stream
       return readStream();
     };
@@ -346,6 +252,10 @@ const ProductListing = () => {
     );
   };
 
+  useEffect(() => {
+    updateKeywordCount();
+  }, [title, bullet1, bullet2, bullet3, bullet4]);
+
   return (
     <>
       <SavedKeywordsModal
@@ -354,6 +264,11 @@ const ProductListing = () => {
         savedKeywords={savedKeywords}
         setKeywordsList={setKeywordsList}
         setKeywords={setKeywords}
+      />
+      <TransitionsModal
+        open={open}
+        handleClose={handleClose}
+        handleOpen={handleOpen}
       />
 
       <div className={styles.listing}>
@@ -440,36 +355,19 @@ const ProductListing = () => {
                 <div className={[styles.title, styles.output].join(" ")}>
                   <div className={styles.outputHeading}>
                     <p>Title</p>
-                    <CopyToClipboard text={title} parseHTML={parseHTML} />
+                    <CopyToClipboard text={title} />
                   </div>
 
                   <GrammarlyEditorPlugin
                     clientId={`${import.meta.env.VITE_GRAMMARLY_CLIENT_ID}`}
                   >
-                    <ContentEditable
-                      html={decorateKeywords(title)}
-                      disabled={false}
-                      onKeyUp={(e) => {
-                        e.preventDefault();
-                        if (
-                          e.code === "Backspace" ||
-                          e.code === "Delete" ||
-                          e.code === "Space"
-                        ) {
-                          setTitle(e.target.innerHTML.replace(/<\/div>/gi, "<br>"));
-                          updateKeywordCount(e.target.innerHTML, "title");
-                        }
-                        if (!/^[a-zA-Z]$/.test(e.key)) {
-                          console.log("Non-alphabet key pressed");
-                          return;
-                        }
-                        const content = e.target.innerHTML.replace(
-                          /<\/div>/gi,
-                          "<br>"
-                        );
-                        setTitle(content);
-                        updateKeywordCount(content, "title");
+                    <textarea
+                      value={title}
+                      onChange={(e) => {
+                        setTitle(e.target.value);
                       }}
+                      rows={3}
+                      className="titleInput"
                     />
                   </GrammarlyEditorPlugin>
                 </div>
@@ -483,31 +381,13 @@ const ProductListing = () => {
                         <CopyToClipboard text={bullet.value} />
                       </div>
                       <GrammarlyEditorPlugin>
-                        <ContentEditable
-                          html={decorateKeywords(bullet.value)}
-                          disabled={false}
-                          onKeyUp={(e) => {
-                            e.preventDefault();
-                            if (
-                              e.code === "Backspace" ||
-                              e.code === "Delete" ||
-                              e.code === "Space"
-                            ) {
-                              bullet.setValue(
-                                e.target.innerHTML.replace(/<\/div>/gi, "<br>")
-                              );
-                              updateKeywordCount(e.target.innerHTML, bullet.id);
-                            }
-                            if (!/^[a-zA-Z]$/.test(e.key)) {
-                              console.log("Non-alphabet key pressed");
-                              return;
-                            }
-                            const content = e.target.innerHTML.replace(
-                              /<\/div>/gi,
-                              "<br>"
-                            );
-                            bullet.setValue(content);
-                            updateKeywordCount(content, bullet.id);
+                        <textarea
+                          value={bullet.value}
+                          rows={5}
+                          className={bullet.class}
+                          id={bullet.id}
+                          onChange={(e) => {
+                            bullet.setValue(e);
                           }}
                         />
                       </GrammarlyEditorPlugin>
@@ -548,7 +428,6 @@ const ProductListing = () => {
                         value={targetLanguage}
                         label="Language"
                         required
-                        defaultValue="en"
                         onChange={(e) => {
                           setTargetLanguage(e.target.value);
                         }}

@@ -4,18 +4,14 @@ import ContentPasteIcon from "@mui/icons-material/ContentPaste";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
-const CopyToClipboard = ({ text, parseHTML = undefined }) => {
+const CopyToClipboard = ({ text }) => {
   const [open, setOpen] = useState(false);
   const [Icon, setIcon] = useState(ContentPasteIcon);
 
   const handleClick = () => {
-    let newText = text;
     try {
       setOpen(true);
-      if (parseHTML) {
-        newText = parseHTML(text);
-      }
-      navigator.clipboard.writeText(newText.toString());
+      navigator.clipboard.writeText(text.toString());
       setIcon(ContentCopyIcon);
 
       setTimeout(() => {
