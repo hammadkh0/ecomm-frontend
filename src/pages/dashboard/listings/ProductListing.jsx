@@ -164,7 +164,6 @@ const ProductListing = () => {
           count++;
         }
       });
-      console.log("count", count);
       return {
         word: keyword,
         keywordCount: count,
@@ -383,7 +382,7 @@ const ProductListing = () => {
                       <GrammarlyEditorPlugin>
                         <textarea
                           value={bullet.value}
-                          rows={5}
+                          rows={3}
                           className={bullet.class}
                           id={bullet.id}
                           onChange={(e) => {
@@ -396,102 +395,103 @@ const ProductListing = () => {
                 </Grammarly>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+      {/* -------------------- RESULTS ------------------------ */}
+      <div className={styles.card}>
+        <h3>Translate the listing into the provided language</h3>
 
-            {/* -------------------- RESULTS ------------------------ */}
+        <div className={styles.markdownBtns}>
+          <div style={{ width: "30%" }}>
+            <Button
+              disabled={!title || !bullet1 || !bullet2 || !bullet3 || !bullet4}
+              variant="outlined"
+              color="warning"
+              className={styles.markdownBtn}
+              onClick={() => createText()}
+            >
+              Create Text
+            </Button>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              gap: "1rem",
+              width: "50%",
+            }}
+          >
             <div>
-              <div className={styles.markdownBtns}>
-                <Button
-                  disabled={!title || !bullet1 || !bullet2 || !bullet3 || !bullet4}
-                  variant="outlined"
-                  color="warning"
-                  className={styles.markdownBtn}
-                  onClick={() => createText()}
-                >
-                  Create Text
-                </Button>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "1rem",
+              <FormControl
+                sx={{ minWidth: 120, width: "200px", marginTop: 0 }}
+                size="small"
+                className={styles.formControl}
+              >
+                <InputLabel id="demo-select-small">Language</InputLabel>
+                <Select
+                  labelId="demo-select-small"
+                  id="demo-select-small"
+                  value={targetLanguage}
+                  label="Language"
+                  required
+                  onChange={(e) => {
+                    setTargetLanguage(e.target.value);
                   }}
+                  sx={{ width: "100%" }}
                 >
-                  <div>
-                    <FormControl
-                      sx={{ minWidth: 120, width: "200px", marginTop: 0 }}
-                      size="small"
-                      className={styles.formControl}
-                    >
-                      <InputLabel id="demo-select-small">Langauge</InputLabel>
-                      <Select
-                        labelId="demo-select-small"
-                        id="demo-select-small"
-                        value={targetLanguage}
-                        label="Language"
-                        required
-                        onChange={(e) => {
-                          setTargetLanguage(e.target.value);
-                        }}
-                        sx={{ width: "100%" }}
-                      >
-                        <MenuItem value={"en"}>
-                          <span className={styles.languageName}>English</span>
-                          <ReactCountryFlag countryCode={"GB"} svg />
-                        </MenuItem>
-                        <MenuItem value={"nl"}>
-                          <span className={styles.languageName}>Dutch</span>
-                          <ReactCountryFlag
-                            countryCode={getCode("Netherlands")}
-                            svg
-                          />
-                        </MenuItem>
-                        <MenuItem value={"de"}>
-                          <span className={styles.languageName}>German</span>
-                          <ReactCountryFlag countryCode={getCode("Germany")} svg />
-                        </MenuItem>
-                        <MenuItem value={"zh-cn"}>
-                          <span className={styles.languageName}>Chinese</span>
-                          <ReactCountryFlag countryCode={getCode("China")} svg />
-                        </MenuItem>
-                        <MenuItem value={"ur"}>
-                          <span className={styles.languageName}>Urdu</span>
-                          <ReactCountryFlag countryCode={getCode("Pakistan")} svg />
-                        </MenuItem>
-                      </Select>
-                    </FormControl>
-                  </div>
-
-                  <Button
-                    disabled={!markdown.length}
-                    variant="outlined"
-                    color="success"
-                    className={styles.markdownBtn}
-                    onClick={() => translateListing()}
-                  >
-                    Translate Text
-                  </Button>
-                </div>
-              </div>
-
-              <div>
-                <div className={styles.markdownOutput}>
-                  <div className={[styles.copy, styles.markdownCopy].join(" ")}>
-                    <CopyToClipboard text={markdown} />
-                  </div>
-                  <GrammarlyEditorPlugin
-                    clientId={`${import.meta.env.VITE_GRAMMARLY_CLIENT_ID}`}
-                  >
-                    <textarea
-                      name="markdown"
-                      className={styles.markdown}
-                      id="markdown"
-                      rows="21"
-                      value={markdown}
-                      onChange={(e) => setMarkdown(e.target.value)}
-                    />
-                  </GrammarlyEditorPlugin>
-                </div>
-              </div>
+                  <MenuItem value={"en"}>
+                    <span className={styles.languageName}>English</span>
+                    <ReactCountryFlag countryCode={"GB"} svg />
+                  </MenuItem>
+                  <MenuItem value={"nl"}>
+                    <span className={styles.languageName}>Dutch</span>
+                    <ReactCountryFlag countryCode={getCode("Netherlands")} svg />
+                  </MenuItem>
+                  <MenuItem value={"de"}>
+                    <span className={styles.languageName}>German</span>
+                    <ReactCountryFlag countryCode={getCode("Germany")} svg />
+                  </MenuItem>
+                  <MenuItem value={"zh-cn"}>
+                    <span className={styles.languageName}>Chinese</span>
+                    <ReactCountryFlag countryCode={getCode("China")} svg />
+                  </MenuItem>
+                  <MenuItem value={"ur"}>
+                    <span className={styles.languageName}>Urdu</span>
+                    <ReactCountryFlag countryCode={getCode("Pakistan")} svg />
+                  </MenuItem>
+                </Select>
+              </FormControl>
             </div>
+
+            <Button
+              disabled={!markdown.length}
+              variant="outlined"
+              color="success"
+              className={styles.markdownBtn}
+              onClick={() => translateListing()}
+            >
+              Translate Text
+            </Button>
+          </div>
+        </div>
+
+        <div>
+          <div className={styles.markdownOutput}>
+            <div className={[styles.copy, styles.markdownCopy].join(" ")}>
+              <CopyToClipboard text={markdown} />
+            </div>
+            <GrammarlyEditorPlugin
+              clientId={`${import.meta.env.VITE_GRAMMARLY_CLIENT_ID}`}
+            >
+              <textarea
+                name="markdown"
+                className={styles.markdown}
+                id="markdown"
+                rows="10"
+                value={markdown}
+                onChange={(e) => setMarkdown(e.target.value)}
+              />
+            </GrammarlyEditorPlugin>
           </div>
         </div>
       </div>
