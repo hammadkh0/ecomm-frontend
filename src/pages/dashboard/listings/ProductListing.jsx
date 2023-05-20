@@ -190,14 +190,16 @@ const ProductListing = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          prompt: `I am a seller at amazon.com and I want to sell a product. Help me in writing an eye catching information about the product so that it will grab the buyers attention. For that I want you to write an eye catching detailed and descriptive product title using the keywords provided below. Then write descriptive bullet points for the product description using the keywords below. Keywords are: '${keywordsList
+          prompt: `I am a new seller at amazon.com and I want to sell a product. Help me in writing an eye catching information about the product so that it will grab the buyers attention and help me sell the best products. Consider the different product descriptions of countless amazon products. 
+          Now I want you to write an eye catching,competitive, best selling, self explanatory product title using the keywords provided below.Use as many twisting and appealing words and adjectives as you can.
+          Then write detailed and comprehensive bullet points for the product description using the keywords below. Keywords are: '${keywordsList
             .map((kwd) => kwd.word)
             .join(" ")}'
 
           Format the response like Title: <your title>
           Bullet1:<first bullet point>
           Bullet2: <second bullet point> etc.
-          The response must include the provided keywords because they are the most searched keywords on amazon.com. `,
+          The response must include the provided keywords as much as you can because they are the most searched keywords on amazon.com and I need these for amazon to recognize my product. `,
         }),
       }
     );
@@ -455,9 +457,9 @@ const ProductListing = () => {
                     <span className={styles.languageName}>Chinese</span>
                     <ReactCountryFlag countryCode={getCode("China")} svg />
                   </MenuItem>
-                  <MenuItem value={"ur"}>
-                    <span className={styles.languageName}>Urdu</span>
-                    <ReactCountryFlag countryCode={getCode("Pakistan")} svg />
+                  <MenuItem value={"fr"}>
+                    <span className={styles.languageName}>French</span>
+                    <ReactCountryFlag countryCode={getCode("France")} svg />
                   </MenuItem>
                 </Select>
               </FormControl>
