@@ -219,10 +219,10 @@ const Product = () => {
         </div>
 
         <div className={Style.headerContent}>
-          <span style={{ marginBottom: 5 }}>
-            Categories:
-            <p className={Style.categories}>{state.categories || ""}</p>
-          </span>
+          <span style={{ marginBottom: 5 }}>Categories:</span>
+          {state.categories && (
+            <p className={Style.categories}>{state.categories.join(", ") || ""}</p>
+          )}
           <p className={Style.price}>
             Price:
             <span style={{ color: "red" }}> {product.price}</span>

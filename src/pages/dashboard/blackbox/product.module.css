@@ -25,8 +25,8 @@
     font-size: 14px;
     color: var(--primary-color-2);
     margin-bottom: 5px;
-    text-decoration: underline;
-    display: inline;
+    /* text-decoration: underline; */
+    /* display: inline; */
 }
 .features h3 {
     border-bottom: 1px solid;

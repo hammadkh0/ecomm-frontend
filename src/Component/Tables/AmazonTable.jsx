@@ -50,7 +50,7 @@ export default function StickyHeadTable(props) {
         asin: params.row.asin,
         domain: props.domain,
         url: `https://${props.domain}/dp/`,
-        categories: params.row.categories,
+        categories: params.row.categories.split(","),
       },
     });
   };
