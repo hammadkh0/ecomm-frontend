@@ -10,6 +10,8 @@ const ControlledSelect = ({
   validate = null,
   children,
   helperText = null,
+  value,
+  onChange,
   ...rest
 }) => {
   return (
@@ -20,7 +22,13 @@ const ControlledSelect = ({
       defaultValue={defaultValue}
       render={({ field }) => (
         <FormControl fullWidth>
-          <Select {...rest} {...field} inputRef={field.ref}>
+          <Select
+            value={value}
+            onChange={onChange}
+            {...rest}
+            {...field}
+            inputRef={field.ref}
+          >
             {children}
           </Select>
           {rest.error && <FormHelperText error> {helperText}</FormHelperText>}

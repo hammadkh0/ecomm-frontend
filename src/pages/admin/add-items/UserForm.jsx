@@ -10,11 +10,11 @@ import TextInput from "../../../Component/Inputs/TextInput";
 import { AlternateEmail, Visibility, VisibilityOff } from "@mui/icons-material";
 import ControlledSelect from "../../../Component/Inputs/ControlledSelect";
 
-const UserForm = ({ control, getValues, errors, edit, userType }) => {
+const UserForm = ({ control, getValues, errors, edit, userType, role }) => {
   const [action, setAction] = React.useState("Enter");
   const [showPassword, setShowPassword] = React.useState("password");
   const [showConfirmPassword, setShowConfirmPassword] = React.useState("password");
-  const [role, setRole] = React.useState(userType);
+  const [userRole, setUserRole] = React.useState(userType);
 
   useEffect(() => {
     if (edit) {
@@ -24,7 +24,7 @@ const UserForm = ({ control, getValues, errors, edit, userType }) => {
     // cleanup function
     return () => {
       setAction("Enter");
-      setRole(userType);
+      setUserRole(userType);
       setShowPassword("password");
       setShowConfirmPassword("password");
     };
@@ -230,15 +230,20 @@ const UserForm = ({ control, getValues, errors, edit, userType }) => {
             name="userType"
             id="userType"
             autoComplete="userType"
-            defaultValue={role}
+            defaultValue={userRole}
+            value={userRole}
             fullWidth
             sx={{ color: "text.secondary" }}
+            onChange={(e) => {
+              console.log(e.target.value);
+              setUserRole(e.target.value);
+            }}
           >
             <MenuItem
               value={"user"}
-              onClick={() => {
-                setRole("user");
-              }}
+              // onClick={() => {
+              //   setRole("user");
+              // }}
               sx={{ color: "text.secondary" }}
             >
               User
@@ -247,9 +252,9 @@ const UserForm = ({ control, getValues, errors, edit, userType }) => {
             <MenuItem
               value={"admin"}
               selected
-              onClick={() => {
-                setRole("admin");
-              }}
+              // onClick={() => {
+              //   setRole("admin");
+              // }}
               sx={{ color: "text.secondary" }}
             >
               Admin

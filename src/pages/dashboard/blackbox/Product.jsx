@@ -79,6 +79,7 @@ const Product = () => {
           },
           body: JSON.stringify({
             reviews_link: product.reviews_link,
+            domain: state.domain,
           }),
         }
       )

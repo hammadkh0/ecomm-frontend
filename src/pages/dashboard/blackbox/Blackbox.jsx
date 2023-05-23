@@ -65,6 +65,7 @@ export default function Blackbox() {
       state: {
         url: `https://${domain}/dp/`,
         asin,
+        domain,
       },
     });
   }
@@ -95,7 +96,7 @@ export default function Blackbox() {
             >
               <MenuItem value={"amazon.com"}>amazon.com</MenuItem>
               <MenuItem value={"amazon.cd"}>amazon.cd</MenuItem>
-              <MenuItem value={"amazon.au"}>amazon.in</MenuItem>
+              <MenuItem value={"amazon.in"}>amazon.in</MenuItem>
             </Select>
           </FormControl>
 

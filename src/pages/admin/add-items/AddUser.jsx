@@ -72,6 +72,7 @@ const AddUser = ({ userType, edit = false }) => {
 
   const onSubmit = (formData) => {
     const url = !edit ? "ecomm/users/createUser" : `ecomm/users/${id}`;
+    console.log(formData);
     fetch(`${import.meta.env.VITE_BACKEND_URL}/${url}`, {
       method: !edit ? "POST" : "PATCH",
       headers: {
@@ -81,9 +82,9 @@ const AddUser = ({ userType, edit = false }) => {
       body: JSON.stringify({
         name: formData.name,
         email: formData.email,
-        password: formData.password,
-        passwordConfirm: formData.confirmPassword,
-        role: formData.role,
+        password: !edit ? formData.password : null,
+        passwordConfirm: !edit ? formData.confirmPassword : null,
+        role: formData.userType,
       }),
     })
       .then((res) => res.json())
@@ -121,6 +122,7 @@ const AddUser = ({ userType, edit = false }) => {
                 errors={errors}
                 edit={edit}
                 userType={userType}
+                role={userType}
               />
               <Grid item xs={12} textAlign={"center"} sx={{ mt: 2, p: 2 }}>
                 <Button

@@ -131,7 +131,6 @@ export default function Signup() {
 
   const authSubmitHandler = async (formData) => {
     try {
-      console.log(inputs);
       const responseData = await sendRequest(
         `${import.meta.env.VITE_BACKEND_URL}/ecomm/users/signup`,
         "POST",

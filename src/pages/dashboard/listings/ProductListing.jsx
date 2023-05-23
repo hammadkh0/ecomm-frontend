@@ -191,7 +191,7 @@ const ProductListing = () => {
         },
         body: JSON.stringify({
           prompt: `I am a new seller at amazon.com and I want to sell a product. Help me in writing an eye catching information about the product so that it will grab the buyers attention and help me sell the best products. Consider the different product descriptions of countless amazon products. 
-          Now I want you to write an eye catching,competitive, best selling, self explanatory product title using the keywords provided below.Use as many twisting and appealing words and adjectives as you can.
+          Now I want you to write an eye catching, descriptive product title using the keywords provided below
           Then write detailed and comprehensive bullet points for the product description using the keywords below. Keywords are: '${keywordsList
             .map((kwd) => kwd.word)
             .join(" ")}'
@@ -199,6 +199,7 @@ const ProductListing = () => {
           Format the response like Title: <your title>
           Bullet1:<first bullet point>
           Bullet2: <second bullet point> etc.
+          The number of bullet points should be 4 so use all keywords and write as much as you can in total 4 bullet points.
           The response must include the provided keywords as much as you can because they are the most searched keywords on amazon.com and I need these for amazon to recognize my product. `,
         }),
       }
@@ -226,15 +227,15 @@ const ProductListing = () => {
           outputs.forEach((output) => {
             output = output.trim();
             if (output.startsWith("Title")) {
-              setTitle(output.split(":")[1]);
+              setTitle(output.split(":")[1].trim());
             } else if (output.startsWith("Bullet1")) {
-              setBullet1(output.split(":")[1]);
+              setBullet1(output.split(":")[1].trim());
             } else if (output.startsWith("Bullet2")) {
-              setBullet2(output.split(":")[1]);
+              setBullet2(output.split(":")[1].trim());
             } else if (output.startsWith("Bullet3")) {
-              setBullet3(output.split(":")[1]);
+              setBullet3(output.split(":")[1].trim());
             } else if (output.startsWith("Bullet4")) {
-              setBullet4(output.split(":")[1]);
+              setBullet4(output.split(":")[1].trim());
             }
           });
         }
@@ -460,6 +461,13 @@ const ProductListing = () => {
                   <MenuItem value={"fr"}>
                     <span className={styles.languageName}>French</span>
                     <ReactCountryFlag countryCode={getCode("France")} svg />
+                  </MenuItem>
+                  <MenuItem value={"ru"}>
+                    <span className={styles.languageName}>Russian</span>
+                    <ReactCountryFlag
+                      countryCode={getCode("Russian Federation")}
+                      svg
+                    />
                   </MenuItem>
                 </Select>
               </FormControl>
